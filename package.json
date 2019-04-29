@@ -1,0 +1,22 @@
+{
+  "name": "xiaoai-tts",
+  "version": "0.1.0",
+  "description": "小爱传音筒",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "node test/login"
+  },
+  "keywords": [
+    "xiaoai",
+    "tts",
+    "xiaomi"
+  ],
+  "author": "Vincent <vv314@foxmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^3.4.5"
+  },
+  "dependencies": {
+    "node-fetch": "^2.4.0"
+  }
+}
