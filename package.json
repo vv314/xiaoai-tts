@@ -1,16 +1,31 @@
 {
   "name": "xiaoai-tts",
-  "version": "0.1.0",
-  "description": "小爱传音筒",
+  "version": "0.2.0",
+  "description": "小爱音箱 TTS",
   "main": "src/index.js",
   "scripts": {
     "test": "node test/login"
   },
+  "files": [
+    "src",
+    "lib/*.js"
+  ],
   "keywords": [
     "xiaoai",
     "tts",
-    "xiaomi"
+    "xiaomi",
+    "小爱",
+    "小爱同学",
+    "小爱音箱"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vv314/xiaoai-tts.git"
+  },
+  "bugs": {
+    "url": "https://github.com/vv314/xiaoai-tts/issues"
+  },
+  "homepage": "https://github.com/vv314/xiaoai-tts#readme",
   "author": "Vincent <vv314@foxmail.com>",
   "license": "MIT",
   "devDependencies": {
