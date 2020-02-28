@@ -17,17 +17,11 @@ npm i xiaoai-tts
 ```javascript
 const XiaoAi = require('xiaoai-tts')
 
-const client = new XiaoAi('username', 'password')
+// 输入小米账户名，密码
+const client = new XiaoAi('fish', '123456')
 
 // 朗读文本
-client.say('hello world')
-
-// 获取设备列表
-client.getDevice().then(deviceList => console.log(deviceList))
-
-// 获取 session 信息
-// 可持久化保存 session
-client.connect().then(session => console.log(session))
+client.say('你好，我是小爱')
 ```
 
 ## API
@@ -45,12 +39,28 @@ client.connect().then(session => console.log(session))
 
 使用 `Session` 对象登录。
 
-使用小米账户登录后，可通过 `connect()` 方法获取 **Session** 信息，Session 对象包含以下属性：
+使用小米账户登录后，调用 `connect()` 返回用户登录凭证——**Session**；
+`Session` 可持久化保存，实例化 `XiaoAi` 时可直接传入：
 
-- `userId: string` 用户 ID
-- `serviceToken: string` 用户授权 token
+```javascript
+const fs = require('fs')
+const client = null
 
-Session 可序列化保存在本地，下次登录时可直接使用此对象实例化 `XiaoAi`。
+try {
+  // 尝试读取本地 Session 信息
+  const Session = fs.readFileSync('~/xiaoai/session', { encoding: 'utf8' })
+
+  // 通过 Session 登录
+  client = new XiaoAi(JSON.parse(Session))
+} catch (e) {
+  client = new XiaoAi('fish', '123456')
+
+  client.connect().then(Session => {
+    // 将 Session 储存到本地
+    fs.writeFileSync('~/xiaoai/session', JSON.stringify(Session))
+  })
+}
+```
 
 ### instance
 
@@ -58,19 +68,43 @@ XiaoAi 实例对象
 
 #### say(msg)
 
-- Returns: `Promise<Response>`
+- Returns: `Promise<ServerResponse>`
 
 朗读指定文本，返回接口调用结果
+
+```javascript
+client.say('小爱你好').then(rep => {
+  // 服务端接口调用结果
+  console.log(rep)
+})
+```
 
 #### connect()
 
 - Returns: `Promise<Session>`
 
-获取 `Session` 信息。
+获取 `Session` 信息
+
+- `Session.userId`: 用户 ID
+- `Session.serviceToken`: 用户 token
+
+```javascript
+client.connect().then(session => {
+  // 用户 Session
+  console.log(session)
+})
+```
 
 #### getDevice(name)
 
 - `name` 过滤设备名称
-- Returns: `Promise<Device[]>`
+- Returns: `Promise<LiveDevice[]>`
 
-获取设备列表
+获取在线设备列表
+
+```javascript
+client.getDevice().then(liveDevice => {
+  // 在线设备，包含多个设备时，以第一个为当前设备
+  console.log(liveDevice)
+})
+```
