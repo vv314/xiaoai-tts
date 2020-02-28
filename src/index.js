@@ -45,7 +45,7 @@ class XiaoAi {
     const liveDevice = await device(cookie)
 
     if (!liveDevice.length) {
-      throw new XiaoAiError()
+      throw new XiaoAiError(ERR_CODE.NO_DEVICE)
     }
 
     deviceId = liveDevice[0].deviceID
