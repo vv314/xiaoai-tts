@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-node-fetch@^2.4.0:
-  version "2.4.0"
-  resolved "https://registry.npm.taobao.org/node-fetch/download/node-fetch-2.4.0.tgz#125ae2b0c2a75cb3b2ed141bf73e106cfe1f0ca8"
-  integrity sha1-ElrisMKnXLOy7RQb9z4QbP4fDKg=
+node-fetch@^2.6.0:
+  version "2.6.0"
+  resolved "https://registry.npm.taobao.org/node-fetch/download/node-fetch-2.6.0.tgz?cache=0&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Fnode-fetch%2Fdownload%2Fnode-fetch-2.6.0.tgz#e633456386d4aa55863f676a7ab0daa8fdecb0fd"
+  integrity sha1-5jNFY4bUqlWGP2dqerDaqP3ssP0=
 
 typescript@^3.4.5:
   version "3.4.5"
