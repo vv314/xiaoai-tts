@@ -13,6 +13,6 @@ const API = {
 module.exports = {
   API,
   APP_VER,
-  SDK_VER,
-  APP_DEVICE_ID
+  APP_DEVICE_ID,
+  SDK_VER
 }

@@ -1,9 +1,10 @@
 const querystring = require('querystring')
+const XiaoAiError = require('./XiaoAiError')
 const request = require('./request')
 const { appendParam, randomString } = require('./utils')
 const { API } = require('./const')
 
-function tts(msg, { cookie, deviceId }) {
+function getReqParam(msg, deviceId) {
   const param = {
     deviceId: deviceId,
     message: JSON.stringify({ text: msg }),
@@ -11,7 +12,13 @@ function tts(msg, { cookie, deviceId }) {
     path: 'mibrain',
     requestId: randomString(30)
   }
-  const url = appendParam(API.USBS, querystring.stringify(param))
+
+  return querystring.stringify(param)
+}
+
+function tts(msg, { cookie, deviceId }) {
+  const param = getReqParam(msg, deviceId)
+  const url = appendParam(API.USBS, param)
 
   return request({
     url,
@@ -19,6 +26,8 @@ function tts(msg, { cookie, deviceId }) {
     headers: {
       Cookie: cookie
     }
+  }).catch(e => {
+    throw new XiaoAiError(e)
   })
 }
 

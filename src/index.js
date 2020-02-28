@@ -1,28 +1,34 @@
+const tts = require('./tts')
 const login = require('./login')
 const device = require('./device')
-const tts = require('./tts')
+const XiaoAiError = require('./XiaoAiError')
 const { isObject } = require('./utils')
+const { ERR_CODE } = XiaoAiError
 
 class XiaoAi {
   constructor(user, pwd) {
     if (isObject(user)) {
       const { userId, serviceToken } = user
 
-      if (!userId || !serviceToken) throw new Error('参数不合法')
+      if (!userId || !serviceToken) throw new XiaoAiError(ERR_CODE.INVALID_ARG)
 
       this.session = login({ userId, serviceToken })
-    } else {
-      if (!user || !pwd) throw new Error('参数不合法')
 
-      this.session = login(user, pwd)
+      return
     }
+
+    if (!user || !pwd) throw new XiaoAiError(ERR_CODE.INVALID_ARG)
+
+    this.session = login(user, pwd)
   }
 
-  connect() {
-    return this.session.then(ss => ({
+  async connect() {
+    const ss = await this.session
+
+    return {
       userId: ss.userId,
       serviceToken: ss.serviceToken
-    }))
+    }
   }
 
   async getDevice(name) {
@@ -30,25 +36,21 @@ class XiaoAi {
   }
 
   async say(msg, deviceId) {
-    const ss = await this.session
+    const { cookie } = await this.session
 
     if (deviceId) {
-      return tts(msg, {
-        cookie: ss.cookie,
-        deviceId: deviceId
-      })
-    } else {
-      const liveDevice = await device(ss.cookie)
-
-      if (!liveDevice.length) {
-        return Promise.resolve('无设备在线')
-      }
-
-      return tts(msg, {
-        cookie: ss.cookie,
-        deviceId: liveDevice[0].deviceID
-      })
+      return tts(msg, { cookie, deviceId })
     }
+
+    const liveDevice = await device(cookie)
+
+    if (!liveDevice.length) {
+      throw new XiaoAiError()
+    }
+
+    deviceId = liveDevice[0].deviceID
+
+    return tts(msg, { cookie, deviceId })
   }
 }
 

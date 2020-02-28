@@ -1,4 +1,5 @@
 const request = require('./request')
+const XiaoAiError = require('./XiaoAiError')
 const { randomString } = require('./utils')
 const { API } = require('./const')
 
@@ -13,13 +14,13 @@ async function getLiveDevice(cookie) {
     headers: {
       Cookie: cookie
     }
+  }).catch(e => {
+    throw new XiaoAiError(e)
   })
 
-  if (rep.code == 0) {
-    return rep.data.filter(d => d.presence == 'online')
-  } else {
-    return []
-  }
+  if (rep.code != 0) return []
+
+  return rep.data.filter(d => d.presence == 'online')
 }
 
 module.exports = getLiveDevice

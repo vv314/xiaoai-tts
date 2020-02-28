@@ -1,13 +1,14 @@
 const request = require('./request')
 const { SDK_VER, API, APP_DEVICE_ID } = require('./const')
 const { md5, sha1Base64, isObject } = require('./utils')
+const XiaoAiError = require('./XiaoAiError')
 
 const commonParam = {
   sid: 'micoapi',
   _json: true
 }
 
-function getAiCookie(userId, serviceToken) {
+function getCookie(userId, serviceToken) {
   return `userId=${userId};serviceToken=${serviceToken}`
 }
 
@@ -52,9 +53,7 @@ async function loginMiAi(authInfo) {
     },
     type: 'raw'
   }).catch(e => {
-    if (e.rep.status == 401) {
-      console.log('权限验证失败')
-    }
+    throw new XiaoAiError(e)
   })
   const cookieStr = rep.headers.get('set-cookie') || ''
   const match = cookieStr.match(/serviceToken=(.*?);/)
@@ -71,20 +70,22 @@ function genClientSign(nonce, secrity) {
 
 async function login(user, pwd) {
   if (isObject(user)) {
-    const { userId, serviceToken } = user
-    const cookie = getAiCookie(userId, serviceToken)
-
-    return {
-      cookie: cookie,
-      userId: userId,
-      serviceToken
-    }
+    return loginByToken(user)
   }
 
+  return loginByAccount(user, pwd)
+}
+
+async function loginByAccount(user, pwd) {
   const sign = await getLoginSign()
   const authInfo = await serviceAuth(sign, user, pwd)
+
+  if (authInfo.code != 0) {
+    throw new XiaoAiError(authInfo.code, authInfo.desc)
+  }
+
   const serviceToken = await loginMiAi(authInfo)
-  const cookie = getAiCookie(authInfo.userId, serviceToken)
+  const cookie = getCookie(authInfo.userId, serviceToken)
 
   return {
     cookie: cookie,
@@ -93,6 +94,17 @@ async function login(user, pwd) {
   }
 }
 
-login.getAiCookie = getAiCookie
+async function loginByToken(user) {
+  const { userId, serviceToken } = user
+  const cookie = getCookie(userId, serviceToken)
+
+  return {
+    cookie: cookie,
+    userId: userId,
+    serviceToken
+  }
+}
+
+login.getCookie = getCookie
 
 module.exports = login
