@@ -9,8 +9,14 @@ class XiaoAi {
   constructor(user, pwd) {
     this.msgQueue = new MessageQueue()
     this.session = login(user, pwd)
+    this.deviceId = ''
 
-    this.getDevice()
+    this.getDevice().then(devices => {
+      if (devices.length == 0 || this.deviceId) return
+
+      console.log('init devvvv')
+      this.useDevice(devices[0].deviceID)
+    })
   }
 
   async connect() {
@@ -28,31 +34,35 @@ class XiaoAi {
 
     if (!name) return devices
 
-    return devices.find(e => e.includes(name))
+    return devices.find(e => e.name.includes(name))
   }
 
   useDevice(deviceId) {
-    this.device = deviceId
+    this.deviceId = deviceId
   }
 
-  async say(msg, deviceId = this.device) {
+  async say(msg, deviceId = this.deviceId) {
     const { cookie } = await this.session
 
     if (deviceId) {
+      console.log('hass', deviceId)
       return tts(msg, { cookie, deviceId })
     }
 
-    const onlineDevices = await this.getDevice()
+    const devices = await this.getDevice()
 
-    if (onlineDevices.length == 0) {
+    if (devices.length == 0) {
       throw new XiaoAiError(ERR_CODE.NO_DEVICE)
     }
 
     // 当查询到多个设备，并且未指定设备 id 时，
     // 默认使用第一个作为当前设备
-    this.useDevice(onlineDevices[0])
+    const targetId = devices[0].deviceID
 
-    return tts(msg, { cookie, device: this.device })
+    // 后续沿用此次查询结果
+    this.useDevice(targetId)
+
+    return tts(msg, { cookie, deviceId: targetId })
   }
 }
 
