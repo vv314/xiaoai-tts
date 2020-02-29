@@ -14,7 +14,6 @@ class XiaoAi {
     this.getDevice().then(devices => {
       if (devices.length == 0 || this.deviceId) return
 
-      console.log('init devvvv')
       this.useDevice(devices[0].deviceID)
     })
   }
@@ -45,7 +44,6 @@ class XiaoAi {
     const { cookie } = await this.session
 
     if (deviceId) {
-      console.log('hass', deviceId)
       return tts(msg, { cookie, deviceId })
     }
 
