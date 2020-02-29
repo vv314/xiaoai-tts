@@ -1,7 +1,7 @@
 const fetch = require('node-fetch')
 const querystring = require('querystring')
 const { appendParam, parseResponseText } = require('./utils')
-const { SDK_VER, APP_VER } = require('./const')
+const { SDK_VER, APP_VER } = require('../const')
 
 class HttpError extends Error {
   constructor(rep) {

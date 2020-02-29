@@ -1,7 +1,7 @@
+const request = require('./lib/request')
 const querystring = require('querystring')
 const XiaoAiError = require('./XiaoAiError')
-const request = require('./request')
-const { appendParam, randomString } = require('./utils')
+const { appendParam, randomString } = require('./lib/utils')
 const { API } = require('./const')
 
 function getReqParam(msg, deviceId) {

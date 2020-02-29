@@ -44,7 +44,7 @@ client.say('你好，我是小爱')
 
 ```javascript
 const fs = require('fs')
-const client = null
+let client = null
 
 try {
   // 尝试读取本地 Session 信息
@@ -55,10 +55,10 @@ try {
 } catch (e) {
   client = new XiaoAi('fish', '123456')
 
-  client.connect().then(Session => {
-    // 将 Session 储存到本地
-    fs.writeFileSync('~/xiaoai/session', JSON.stringify(Session))
-  })
+  const Session = await client.connect()
+
+  // 将 Session 储存到本地
+  fs.writeFileSync('~/xiaoai/session', JSON.stringify(Session))
 }
 ```
 
@@ -66,17 +66,49 @@ try {
 
 XiaoAi 实例对象
 
-#### say(msg)
+#### say(message[, deviceId])
 
+- `message: string` tts 文本信息
+- `[deviceId]: string` 可选，设备 id
 - Returns: `Promise<ServerResponse>`
 
 朗读指定文本，返回接口调用结果
 
 ```javascript
-client.say('小爱你好').then(rep => {
-  // 服务端接口调用结果
-  console.log(rep)
-})
+// rep 为服务器响应结果
+const rep = await client.say('小爱你好')
+
+// 指定设备朗读
+await client.say('卧室的小爱你好', '5a82xxxx-0d07-480e-xxxx-2b5ccxxxx7dc')
+```
+
+#### getDevice(name)
+
+- `name` 过滤设备名称
+- Returns: `Promise<DeviceId[]>`
+
+获取**在线**设备列表
+
+```javascript
+// 获取所有在线设备
+const onlineDevices = await client.getDevice()
+
+// 获取指定设备
+const targetDevice = await client.getDevice('卧室小爱')
+```
+
+#### useDevice(deviceId)
+
+- `deviceId: string` 指定设备
+
+获取**在线**设备列表
+
+```javascript
+// 获取所有在线设备
+const onlineDevices = await client.getDevice()
+
+// 获取指定设备
+const targetDevice = await client.getDevice('卧室小爱')
 ```
 
 #### connect()
@@ -89,22 +121,5 @@ client.say('小爱你好').then(rep => {
 - `Session.serviceToken`: 用户 token
 
 ```javascript
-client.connect().then(session => {
-  // 用户 Session
-  console.log(session)
-})
-```
-
-#### getDevice(name)
-
-- `name` 过滤设备名称
-- Returns: `Promise<LiveDevice[]>`
-
-获取在线设备列表
-
-```javascript
-client.getDevice().then(liveDevice => {
-  // 在线设备，包含多个设备时，以第一个为当前设备
-  console.log(liveDevice)
-})
+const Session = await client.connect()
 ```

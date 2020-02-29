@@ -1,25 +1,16 @@
 const tts = require('./tts')
 const login = require('./login')
-const device = require('./device')
+const getDevice = require('./getDevice')
 const XiaoAiError = require('./XiaoAiError')
-const { isObject } = require('./utils')
+const MessageQueue = require('./lib/MessageQueue')
 const { ERR_CODE } = XiaoAiError
 
 class XiaoAi {
   constructor(user, pwd) {
-    if (isObject(user)) {
-      const { userId, serviceToken } = user
-
-      if (!userId || !serviceToken) throw new XiaoAiError(ERR_CODE.INVALID_ARG)
-
-      this.session = login({ userId, serviceToken })
-
-      return
-    }
-
-    if (!user || !pwd) throw new XiaoAiError(ERR_CODE.INVALID_ARG)
-
+    this.msgQueue = new MessageQueue()
     this.session = login(user, pwd)
+
+    this.getDevice()
   }
 
   async connect() {
@@ -32,25 +23,36 @@ class XiaoAi {
   }
 
   async getDevice(name) {
-    return this.session.then(ss => device(ss.cookie))
+    const { cookie } = await this.session
+    const devices = await getDevice(cookie)
+
+    if (!name) return devices
+
+    return devices.find(e => e.includes(name))
   }
 
-  async say(msg, deviceId) {
+  useDevice(deviceId) {
+    this.device = deviceId
+  }
+
+  async say(msg, deviceId = this.device) {
     const { cookie } = await this.session
 
     if (deviceId) {
       return tts(msg, { cookie, deviceId })
     }
 
-    const liveDevice = await device(cookie)
+    const onlineDevices = await this.getDevice()
 
-    if (!liveDevice.length) {
+    if (onlineDevices.length == 0) {
       throw new XiaoAiError(ERR_CODE.NO_DEVICE)
     }
 
-    deviceId = liveDevice[0].deviceID
+    // 当查询到多个设备，并且未指定设备 id 时，
+    // 默认使用第一个作为当前设备
+    this.useDevice(onlineDevices[0])
 
-    return tts(msg, { cookie, deviceId })
+    return tts(msg, { cookie, device: this.device })
   }
 }
 

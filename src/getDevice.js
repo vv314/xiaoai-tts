@@ -1,9 +1,9 @@
-const request = require('./request')
+const request = require('./lib/request')
 const XiaoAiError = require('./XiaoAiError')
-const { randomString } = require('./utils')
+const { randomString } = require('./lib/utils')
 const { API } = require('./const')
 
-async function getLiveDevice(cookie) {
+async function getDevice(cookie) {
   const rep = await request({
     url: API.DEVICE_LIST,
     type: 'xiaoai',
@@ -20,7 +20,9 @@ async function getLiveDevice(cookie) {
 
   if (rep.code != 0) return []
 
-  return rep.data.filter(d => d.presence == 'online')
+  const onlineDevice = rep.data.filter(d => d.presence == 'online')
+
+  return onlineDevice
 }
 
-module.exports = getLiveDevice
+module.exports = getDevice

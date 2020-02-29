@@ -1,11 +1,20 @@
-const request = require('./request')
+const request = require('./lib/request')
+const { md5, sha1Base64, isObject } = require('./lib/utils')
 const { SDK_VER, API, APP_DEVICE_ID } = require('./const')
-const { md5, sha1Base64, isObject } = require('./utils')
 const XiaoAiError = require('./XiaoAiError')
+const { ERR_CODE } = XiaoAiError
 
 const commonParam = {
   sid: 'micoapi',
   _json: true
+}
+
+async function login(user, pwd) {
+  if (isObject(user)) {
+    return loginByToken(user)
+  }
+
+  return loginByAccount(user, pwd)
 }
 
 function getCookie(userId, serviceToken) {
@@ -68,15 +77,9 @@ function genClientSign(nonce, secrity) {
   return hashStr
 }
 
-async function login(user, pwd) {
-  if (isObject(user)) {
-    return loginByToken(user)
-  }
-
-  return loginByAccount(user, pwd)
-}
-
 async function loginByAccount(user, pwd) {
+  if (!user || !pwd) throw new XiaoAiError(ERR_CODE.INVALID_ARG)
+
   const sign = await getLoginSign()
   const authInfo = await serviceAuth(sign, user, pwd)
 
@@ -85,23 +88,23 @@ async function loginByAccount(user, pwd) {
   }
 
   const serviceToken = await loginMiAi(authInfo)
-  const cookie = getCookie(authInfo.userId, serviceToken)
 
   return {
-    cookie: cookie,
     userId: authInfo.userId,
-    serviceToken
+    serviceToken: serviceToken,
+    cookie: getCookie(authInfo.userId, serviceToken)
   }
 }
 
 async function loginByToken(user) {
   const { userId, serviceToken } = user
-  const cookie = getCookie(userId, serviceToken)
+
+  if (!userId || !serviceToken) throw new XiaoAiError(ERR_CODE.INVALID_ARG)
 
   return {
-    cookie: cookie,
     userId: userId,
-    serviceToken
+    serviceToken: serviceToken,
+    cookie: getCookie(userId, serviceToken)
   }
 }
 
