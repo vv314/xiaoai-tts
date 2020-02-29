@@ -76,16 +76,16 @@ XiaoAi 实例对象
 
 ```javascript
 // rep 为服务器响应结果
-const rep = await client.say('小爱你好')
+const rep = await client.say('你好，我是小爱')
 
-// 指定设备朗读
-await client.say('卧室的小爱你好', '5a82xxxx-0d07-480e-xxxx-2b5ccxxxx7dc')
+// 强制指定设备朗读（仅限本次会话）
+client.say('你好，我是卧室的小爱', '5a82xxxx-0d07-480e-xxxx-2b5ccxxxx7dc')
 ```
 
 #### getDevice(name)
 
 - `name` 过滤设备名称
-- Returns: `Promise<DeviceId[]>`
+- Returns: `Promise<Device[]>`
 
 获取**在线**设备列表
 
@@ -93,22 +93,23 @@ await client.say('卧室的小爱你好', '5a82xxxx-0d07-480e-xxxx-2b5ccxxxx7dc'
 // 获取所有在线设备
 const onlineDevices = await client.getDevice()
 
-// 获取指定设备
-const targetDevice = await client.getDevice('卧室小爱')
+// 获取指定设备信息
+const roomDevice = await client.getDevice('卧室小爱')
 ```
 
 #### useDevice(deviceId)
 
-- `deviceId: string` 指定设备
+- `deviceId: string` 设备 id
 
-获取**在线**设备列表
+设置当前设备，后续会话将沿用此设备
 
 ```javascript
-// 获取所有在线设备
-const onlineDevices = await client.getDevice()
+const roomDevice = await client.getDevice('卧室小爱')
 
-// 获取指定设备
-const targetDevice = await client.getDevice('卧室小爱')
+// 设置当前设备
+client.useDevice(roomDevice.deviceID)
+
+client.say('你好，我是卧室的小爱')
 ```
 
 #### connect()
