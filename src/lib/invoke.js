@@ -18,7 +18,7 @@ async function invoke({ method = '', message = {}, path = '', ticket = {} }) {
   // console.log(param)
   // console.log(ticket.cookie)
 
-  return request({
+  const rep = await request({
     url,
     method: 'POST',
     headers: {
@@ -27,6 +27,12 @@ async function invoke({ method = '', message = {}, path = '', ticket = {} }) {
   }).catch(e => {
     throw new XiaoAiError(e)
   })
+
+  if (rep.code != 0) {
+    throw new XiaoAiError(rep.code, rep.message)
+  }
+
+  return rep.data
 }
 
 module.exports = invoke

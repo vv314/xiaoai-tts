@@ -12,18 +12,14 @@ const baseParam = {
 
 // 获取当前播放状态
 async function getPlayStatus(ticket) {
-  const res = await invoke({
+  const data = await invoke({
     ...baseParam,
     // 确保在 baseParam 之后，以覆盖 baseParam.method
     method: 'player_get_play_status',
     ticket
   })
 
-  if (res.code != 0) {
-    throw new XiaoAiError(res.code, res.message)
-  }
-
-  return parseJson(res.data.info)
+  return parseJson(data.info)
 }
 
 // 设置音量
@@ -110,7 +106,7 @@ async function getPlaySong(ticket) {
   const status = await getPlayStatus(ticket)
   const songId = status.play_song_detail.global_id
 
-  if (!songId) return {}
+  if (!songId) return null
 
   const rep = await request({
     url: API.SONG_INFO,
@@ -125,7 +121,11 @@ async function getPlaySong(ticket) {
     throw new XiaoAiError(e)
   })
 
-  return rep
+  if (rep.code != 0) {
+    throw new XiaoAiError(rep.code, rep.message)
+  }
+
+  return rep.data
 }
 
 module.exports = {

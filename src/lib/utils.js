@@ -45,10 +45,18 @@ function randomString(length) {
 }
 
 function parseJson(str) {
-  return JSON.parse(
-    // 将大数字转为 string, 避免精度丢失
-    str.replace(/([\\[:])?(\d+)([,\\}\]])/g, '$1"$2"$3')
-  )
+  let data
+
+  try {
+    data = JSON.parse(
+      // 将大数字转为 string, 避免精度丢失
+      str.replace(/([\\[:])?(\d+)([,\\}\]])/g, '$1"$2"$3')
+    )
+  } catch (e) {
+    data = JSON.parse(str)
+  }
+
+  return data
 }
 
 module.exports = {

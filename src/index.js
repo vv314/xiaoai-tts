@@ -100,7 +100,7 @@ class XiaoAi {
     const device = devices[0]
 
     // 后续沿用此次查询结果
-    await this.useDevice(device)
+    await this.useDevice(device.deviceID)
 
     // 确保在 useDevice 成功后获取
     const { cookie } = await this.session
