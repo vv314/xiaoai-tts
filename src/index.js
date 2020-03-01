@@ -1,7 +1,7 @@
 const tts = require('./tts')
 const login = require('./login')
 const getDevices = require('./getDevices')
-const XiaoAiError = require('./XiaoAiError')
+const XiaoAiError = require('./lib/XiaoAiError')
 const MessageQueue = require('./lib/MessageQueue')
 const mediaPlayer = require('./mediaPlayer')
 const { ERR_CODE } = XiaoAiError

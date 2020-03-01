@@ -1,7 +1,7 @@
 const request = require('./lib/request')
 const { md5, sha1Base64, isObject } = require('./lib/utils')
 const { SDK_VER, API, APP_DEVICE_ID } = require('./const')
-const XiaoAiError = require('./XiaoAiError')
+const XiaoAiError = require('./lib/XiaoAiError')
 const { ERR_CODE } = XiaoAiError
 
 const commonParam = {

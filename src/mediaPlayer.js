@@ -1,40 +1,17 @@
-const request = require('./lib/request')
-const querystring = require('querystring')
-const XiaoAiError = require('./XiaoAiError')
-const { appendParam, randomString } = require('./lib/utils')
-const { API } = require('./const')
+const XiaoAiError = require('./lib/XiaoAiError')
+const invoke = require('./lib/invoke')
 
 const VOLUME_STEP = 5
-
-async function invoke({
-  method = 'player_play_operation',
-  message = {},
-  ticket
-}) {
-  const param = {
-    deviceId: ticket.deviceId,
-    message: JSON.stringify(message),
-    method: method,
-    path: 'mediaplayer',
-    requestId: randomString(30)
-  }
-
-  const url = appendParam(API.USBS, querystring.stringify(param))
-
-  return request({
-    url,
-    method: 'POST',
-    headers: {
-      Cookie: ticket.cookie
-    }
-  }).catch(e => {
-    throw new XiaoAiError(e)
-  })
+const baseParam = {
+  method: 'player_play_operation',
+  path: 'mediaplayer'
 }
 
 // 获取当前播放状态
 async function getPlayStatus(ticket) {
   return invoke({
+    ...baseParam,
+    // 确保在 baseParam 之后，以覆盖 baseParam.method
     method: 'player_get_play_status',
     ticket
   })
@@ -46,6 +23,8 @@ async function setVolume(ticket, volume) {
   volume = Math.min(Math.max(volume, 0), 100)
 
   return invoke({
+    ...baseParam,
+    // 确保在 baseParam 之后，以覆盖 baseParam.method
     method: 'player_set_volume',
     message: { volume },
     ticket
@@ -66,6 +45,7 @@ async function getVolume(ticket) {
 // 继续播放
 async function play(ticket) {
   return invoke({
+    ...baseParam,
     message: { action: 'play', media: 'common' },
     ticket
   })
@@ -74,6 +54,7 @@ async function play(ticket) {
 // 暂停播放
 async function pause(ticket) {
   return invoke({
+    ...baseParam,
     message: { action: 'pause', media: 'common' },
     ticket
   })
@@ -82,6 +63,7 @@ async function pause(ticket) {
 // 上一曲
 async function prev(ticket) {
   return invoke({
+    ...baseParam,
     message: { action: 'prev', media: 'common' },
     ticket
   })
@@ -90,6 +72,7 @@ async function prev(ticket) {
 // 下一曲
 async function next(ticket) {
   return invoke({
+    ...baseParam,
     message: { action: 'next', media: 'common' },
     ticket
   })
@@ -98,6 +81,7 @@ async function next(ticket) {
 // 切换播放状态
 async function togglePlayState(ticket) {
   return invoke({
+    ...baseParam,
     message: { action: 'toggle', media: 'common' },
     ticket
   })

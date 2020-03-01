@@ -1,5 +1,5 @@
 const request = require('./lib/request')
-const XiaoAiError = require('./XiaoAiError')
+const XiaoAiError = require('./lib/XiaoAiError')
 const { randomString } = require('./lib/utils')
 const { API } = require('./const')
 
