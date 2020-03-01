@@ -30,16 +30,20 @@ client.say('你好，我是小爱')
 
 #### new XiaoAi(username, password)
 
-- `username: string` 小米账户用户名
-- `password: string` 账户密码
+- `username` `{String}` 小米账户用户名
+- `password` `{String}` 账户密码
 
 使用小米账户登录小爱音箱
 
 #### new XiaoAi(session)
 
-使用 `Session` 对象登录。
+- `session` `{Object}` Session 信息
+  - `userId` `{String}`
+  - `serviceToken` `{String}`
 
-使用小米账户登录后，调用 `connect()` 返回用户登录凭证——**Session**；
+使用 `Session` 登录。
+
+使用小米账户登录后，调用 `connect()` 返回用户登录信息；
 `Session` 可持久化保存，实例化 `XiaoAi` 时可直接传入：
 
 ```javascript
@@ -66,11 +70,11 @@ try {
 
 XiaoAi 实例对象
 
-#### say(message[, deviceId])
+#### say(text, [deviceId])
 
-- `message: string` tts 文本信息
-- `[deviceId]: string` 可选，设备 id
-- Returns: `Promise<ServerResponse>`
+- `text` `{String}` 文本信息
+- `deviceId` `{String}` 设备 id
+- Returns: `{Promise<Response>}`
 
 朗读指定文本，返回接口调用结果
 
@@ -82,24 +86,24 @@ const rep = await client.say('你好，我是小爱')
 client.say('你好，我是卧室的小爱', '5a82xxxx-0d07-480e-xxxx-2b5ccxxxx7dc')
 ```
 
-#### getDevice(name)
+#### getDevice([name])
 
-- `name` 过滤设备名称
-- Returns: `Promise<Device[]>`
+- `name` `{String}` 设备名称(别名)
+- Returns: `{Promise<Device[]>}` 设备信息
 
 获取**在线**设备列表
 
 ```javascript
-// 获取所有在线设备
+// 获取所有在线设备信息
 const onlineDevices = await client.getDevice()
 
 // 获取指定设备信息
 const roomDevice = await client.getDevice('卧室小爱')
 ```
 
-#### useDevice(deviceId)
+#### useDevice([deviceId])
 
-- `deviceId: string` 设备 id
+- `deviceId` `{String}` 设备 id
 
 设置当前设备，后续会话将沿用此设备
 
@@ -114,13 +118,49 @@ client.say('你好，我是卧室的小爱')
 
 #### connect()
 
-- Returns: `Promise<Session>`
+- Returns: `{Promise<Session>}`
+  - `Session.userId` `{String}`
+  - `Session.serviceToken` `{String}`
 
 获取 `Session` 信息
-
-- `Session.userId`: 用户 ID
-- `Session.serviceToken`: 用户 token
 
 ```javascript
 const Session = await client.connect()
 ```
+
+#### setVolume(volume, [deviceId])
+
+- `volume` `{Number}` 音量值
+- `deviceId` `{String}` 设备 id
+- Returns: `{Promise<Response>}`
+
+设置音量
+
+```javascript
+client.setVolume(30)
+```
+
+#### getVolume([deviceId])
+
+- `deviceId` `{String}` 设备 id
+- Returns: `{Promise<Number>}` 音量值
+
+获取音量
+
+```javascript
+const volume = await client.getVolume()
+```
+
+#### volumeUp([deviceId])
+
+- `deviceId` `{String}` 设备 id
+- Returns: `{Promise<Response>}`
+
+调高音量，幅度 5
+
+#### volumeDown([deviceId])
+
+- `deviceId` `{String}` 设备 id
+- Returns: `{Promise<Response>}`
+
+调低音量，幅度 5
