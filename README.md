@@ -166,7 +166,7 @@ const volume = await client.getVolume()
 
 #### getPlaySong()
 
-- Returns: `{Promise<Response>}` 媒体信息
+- Returns: `{Promise<Response | null>}` 媒体信息
 
 获取正在播放的媒体信息
 
