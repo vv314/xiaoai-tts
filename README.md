@@ -128,6 +128,8 @@ client.say('你好，我是卧室的小爱')
 const Session = await client.connect()
 ```
 
+### 媒体控制
+
 #### setVolume(volume, [deviceId])
 
 - `volume` `{Number}` 音量值
@@ -164,3 +166,52 @@ const volume = await client.getVolume()
 - Returns: `{Promise<Response>}`
 
 调低音量，幅度 5
+
+#### volumeDown([deviceId])
+
+- `deviceId` `{String}` 设备 id
+- Returns: `{Promise<Response>}`
+
+调低音量，幅度 5
+
+#### getPlayStatus([deviceId])
+
+- `deviceId` `{String}` 设备 id
+- Returns: `{Promise<Response>}`
+
+获取当前媒体播放状态
+
+#### play([deviceId])
+
+- `deviceId` `{String}` 设备 id
+- Returns: `{Promise<Response>}`
+
+继续媒体播放
+
+#### pause([deviceId])
+
+- `deviceId` `{String}` 设备 id
+- Returns: `{Promise<Response>}`
+
+暂停媒体播放
+
+#### togglePlayState([deviceId])
+
+- `deviceId` `{String}` 设备 id
+- Returns: `{Promise<Response>}`
+
+切换播放状态(播放/暂停)
+
+#### prev([deviceId])
+
+- `deviceId` `{String}` 设备 id
+- Returns: `{Promise<Response>}`
+
+播放上一曲
+
+#### next([deviceId])
+
+- `deviceId` `{String}` 设备 id
+- Returns: `{Promise<Response>}`
+
+播放下一曲

@@ -3,8 +3,8 @@ const login = require('./login')
 const getDevices = require('./getDevices')
 const XiaoAiError = require('./XiaoAiError')
 const MessageQueue = require('./lib/MessageQueue')
+const mediaPlayer = require('./mediaPlayer')
 const { ERR_CODE } = XiaoAiError
-const { setVolume, getVolume, volumeUp, volumeDown } = require('./mediaPlayer')
 
 class XiaoAi {
   /**
@@ -107,7 +107,7 @@ class XiaoAi {
       throw new XiaoAiError(ERR_CODE.INVALID_INPUT)
     }
 
-    return this._call(setVolume, deviceId, volume)
+    return this._call(mediaPlayer.setVolume, deviceId, volume)
   }
 
   /**
@@ -116,7 +116,7 @@ class XiaoAi {
    * @return {Promise<Number>}  音量值
    */
   async getVolume(deviceId) {
-    return this._call(getVolume, deviceId)
+    return this._call(mediaPlayer.getVolume, deviceId)
   }
 
   /**
@@ -125,7 +125,7 @@ class XiaoAi {
    * @return {Promise<Response>} 服务端响应
    */
   async volumeUp(deviceId) {
-    return this._call(volumeUp, deviceId)
+    return this._call(mediaPlayer.volumeUp, deviceId)
   }
 
   /**
@@ -134,7 +134,61 @@ class XiaoAi {
    * @return {Promise<Response>} 服务端响应
    */
   async volumeDown(deviceId) {
-    return this._call(volumeDown, deviceId)
+    return this._call(mediaPlayer.volumeDown, deviceId)
+  }
+
+  /**
+   * 继续媒体播放
+   * @param  {String} [deviceId]  设备 id
+   * @return {Promise<Response>} 服务端响应
+   */
+  async play(deviceId) {
+    return this._call(mediaPlayer.play, deviceId)
+  }
+
+  /**
+   * 暂停媒体播放
+   * @param  {String} [deviceId]  设备 id
+   * @return {Promise<Response>} 服务端响应
+   */
+  async pause(deviceId) {
+    return this._call(mediaPlayer.pause, deviceId)
+  }
+
+  /**
+   * 播放上一曲
+   * @param  {String} [deviceId]  设备 id
+   * @return {Promise<Response>} 服务端响应
+   */
+  async prev(deviceId) {
+    return this._call(mediaPlayer.prev, deviceId)
+  }
+
+  /**
+   * 播放下一曲
+   * @param  {String} [deviceId]  设备 id
+   * @return {Promise<Response>} 服务端响应
+   */
+  async next(deviceId) {
+    return this._call(mediaPlayer.next, deviceId)
+  }
+
+  /**
+   * 切换播放状态(播放/暂停)
+   * @param  {String} [deviceId]  设备 id
+   * @return {Promise<Response>} 服务端响应
+   */
+  async togglePlayState(deviceId) {
+    return this._call(mediaPlayer.togglePlayState, deviceId)
+  }
+
+  /**
+   * 获取当前媒体播放状态
+   * @param  {String} [deviceId]  设备 id
+   * @return {Promise<Response>} 服务端响应
+   */
+  async getPlayStatus(deviceId) {
+    return this._call(mediaPlayer.getPlayStatus, deviceId)
   }
 }
 

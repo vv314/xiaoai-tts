@@ -32,6 +32,7 @@ async function invoke({
   })
 }
 
+// 获取当前播放状态
 async function getPlayStatus(ticket) {
   return invoke({
     method: 'player_get_play_status',
@@ -62,7 +63,7 @@ async function getVolume(ticket) {
   return JSON.parse(res.data.info).volume
 }
 
-// 播放
+// 继续播放
 async function play(ticket) {
   return invoke({
     message: { action: 'play', media: 'common' },
@@ -70,7 +71,7 @@ async function play(ticket) {
   })
 }
 
-// 暂停
+// 暂停播放
 async function pause(ticket) {
   return invoke({
     message: { action: 'pause', media: 'common' },
@@ -94,8 +95,8 @@ async function next(ticket) {
   })
 }
 
-// 切换
-async function toggle(ticket) {
+// 切换播放状态
+async function togglePlayState(ticket) {
   return invoke({
     message: { action: 'toggle', media: 'common' },
     ticket
@@ -121,9 +122,10 @@ module.exports = {
   pause,
   prev,
   next,
-  toggle,
   setVolume,
   getVolume,
   volumeUp,
-  volumeDown
+  volumeDown,
+  getPlayStatus,
+  togglePlayState
 }
