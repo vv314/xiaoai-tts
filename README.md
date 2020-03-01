@@ -70,47 +70,42 @@ try {
 
 XiaoAi 实例对象
 
-#### say(text, [deviceId])
+#### say(text)
 
 - `text` `{String}` 文本信息
-- `deviceId` `{String}` 设备 id
 - Returns: `{Promise<Response>}`
 
 朗读指定文本，返回接口调用结果
 
 ```javascript
-// rep 为服务器响应结果
-const rep = await client.say('你好，我是小爱')
-
-// 强制指定设备朗读（仅限本次会话）
-client.say('你好，我是卧室的小爱', '5a82xxxx-0d07-480e-xxxx-2b5ccxxxx7dc')
+client.say('你好，我是小爱')
 ```
 
 #### getDevice([name])
 
 - `name` `{String}` 设备名称(别名)
-- Returns: `{Promise<Device[]>}` 设备信息
+- Returns: `{Promise<Promise<Object[] | Object | null>}` 设备信息
 
 获取**在线**设备列表
 
 ```javascript
-// 获取所有在线设备信息
+// 获取所有在线设备
 const onlineDevices = await client.getDevice()
 
-// 获取指定设备信息
+// 获取单个设备，未找到时返回 null
 const roomDevice = await client.getDevice('卧室小爱')
 ```
 
-#### useDevice([deviceId])
+#### useDevice(deviceId)
 
 - `deviceId` `{String}` 设备 id
 
-设置当前设备，后续会话将沿用此设备
+切换指定设备。`xiaomi-tts` 实例化后默认使用 `getDevice()` 方法返回的第一个设备，可使用此方法切换为指定设备。
 
 ```javascript
 const roomDevice = await client.getDevice('卧室小爱')
 
-// 设置当前设备
+// 使用“卧室小爱”
 client.useDevice(roomDevice.deviceID)
 
 client.say('你好，我是卧室的小爱')
@@ -118,7 +113,7 @@ client.say('你好，我是卧室的小爱')
 
 #### connect()
 
-- Returns: `{Promise<Session>}`
+- Returns: `{Promise<Session>}` session 信息
   - `Session.userId` `{String}`
   - `Session.serviceToken` `{String}`
 
@@ -130,10 +125,9 @@ const Session = await client.connect()
 
 ### 媒体控制
 
-#### setVolume(volume, [deviceId])
+#### setVolume(volume)
 
 - `volume` `{Number}` 音量值
-- `deviceId` `{String}` 设备 id
 - Returns: `{Promise<Response>}`
 
 设置音量
@@ -142,9 +136,8 @@ const Session = await client.connect()
 client.setVolume(30)
 ```
 
-#### getVolume([deviceId])
+#### getVolume()
 
-- `deviceId` `{String}` 设备 id
 - Returns: `{Promise<Number>}` 音量值
 
 获取音量
@@ -153,65 +146,56 @@ client.setVolume(30)
 const volume = await client.getVolume()
 ```
 
-#### volumeUp([deviceId])
+#### volumeUp()
 
-- `deviceId` `{String}` 设备 id
 - Returns: `{Promise<Response>}`
 
 调高音量，幅度 5
 
-#### volumeDown([deviceId])
+#### volumeDown()
 
-- `deviceId` `{String}` 设备 id
 - Returns: `{Promise<Response>}`
 
 调低音量，幅度 5
 
-#### volumeDown([deviceId])
+#### getPlayStatus()
 
-- `deviceId` `{String}` 设备 id
-- Returns: `{Promise<Response>}`
-
-调低音量，幅度 5
-
-#### getPlayStatus([deviceId])
-
-- `deviceId` `{String}` 设备 id
-- Returns: `{Promise<Response>}`
+- Returns: `{Promise<Response>}` 状态信息
 
 获取当前媒体播放状态
 
-#### play([deviceId])
+#### getPlaySong()
 
-- `deviceId` `{String}` 设备 id
+- Returns: `{Promise<Response>}` 媒体信息
+
+获取正在播放的媒体信息
+
+#### play()
+
 - Returns: `{Promise<Response>}`
 
-继续媒体播放
+继续播放媒体
 
-#### pause([deviceId])
+#### pause()
 
-- `deviceId` `{String}` 设备 id
 - Returns: `{Promise<Response>}`
 
-暂停媒体播放
+暂停播放媒体
 
-#### togglePlayState([deviceId])
+#### togglePlayState()
 
-- `deviceId` `{String}` 设备 id
 - Returns: `{Promise<Response>}`
 
 切换播放状态(播放/暂停)
 
-#### prev([deviceId])
+#### prev()
 
-- `deviceId` `{String}` 设备 id
 - Returns: `{Promise<Response>}`
 
 播放上一曲
 
-#### next([deviceId])
+#### next()
 
-- `deviceId` `{String}` 设备 id
 - Returns: `{Promise<Response>}`
 
 播放下一曲

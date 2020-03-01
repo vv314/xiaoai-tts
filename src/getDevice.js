@@ -3,12 +3,11 @@ const XiaoAiError = require('./lib/XiaoAiError')
 const { randomString } = require('./lib/utils')
 const { API } = require('./const')
 
-async function getDevices(cookie, master = 1) {
+async function getDevice(cookie) {
   const rep = await request({
     url: API.DEVICE_LIST,
-    type: 'xiaoai',
     data: {
-      master: master,
+      master: cookie.indexOf('deviceId') < 0 ? 1 : 0,
       requestId: randomString(30)
     },
     headers: {
@@ -25,4 +24,4 @@ async function getDevices(cookie, master = 1) {
   return liveDevices
 }
 
-module.exports = getDevices
+module.exports = getDevice

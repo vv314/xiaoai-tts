@@ -11,20 +11,31 @@ const commonParam = {
 
 async function login(user, pwd) {
   if (isObject(user)) {
-    return loginByToken(user)
+    return loginBySession(user)
   }
 
   return loginByAccount(user, pwd)
 }
 
-function getCookie(userId, serviceToken) {
-  return `userId=${userId};serviceToken=${serviceToken}`
+function getCookie({
+  userId = '',
+  serviceToken = '',
+  deviceId = '',
+  serialNumber = ''
+}) {
+  let cookie = `userId=${userId};serviceToken=${serviceToken}`
+
+  if (deviceId && serialNumber) {
+    cookie += `;deviceId=${deviceId};sn=${serialNumber}`
+  }
+
+  return cookie
 }
 
 async function getLoginSign() {
   const info = await request({
     url: API.SERVICE_LOGIN,
-    type: 'xiaoai',
+    type: 'text',
     data: commonParam
   })
 
@@ -42,7 +53,7 @@ async function serviceAuth(signData, user, pwd) {
   const AuthInfo = await request({
     url: API.SERVICE_AUTH,
     method: 'post',
-    type: 'xiaoai',
+    type: 'text',
     data: data,
     headers: {
       Cookie: `deviceId=${APP_DEVICE_ID};sdkVersion=${SDK_VER}`
@@ -90,28 +101,39 @@ async function loginByAccount(user, pwd) {
   }
 
   const serviceToken = await loginMiAi(authInfo)
-
-  return {
-    userId: authInfo.userId,
+  const session = {
     serviceToken: serviceToken,
-    cookie: getCookie(authInfo.userId, serviceToken)
+    userId: authInfo.userId
   }
+
+  session['cookie'] = getCookie(session)
+
+  return session
 }
 
-async function loginByToken(user) {
-  const { userId, serviceToken } = user
+async function loginBySession(session) {
+  const keys = ['userId', 'serviceToken', 'serialNumber', 'deviceId']
+  const hasVal = k => Boolean(session[k])
 
-  if (!userId || !serviceToken) {
-    throw new XiaoAiError(ERR_CODE.INVALID_INPUT)
+  if (!keys.every(hasVal)) {
+    throw new XiaoAiError(ERR_CODE.AURH_ERR)
   }
 
-  return {
-    userId: userId,
-    serviceToken: serviceToken,
-    cookie: getCookie(userId, serviceToken)
-  }
+  session['cookie'] = getCookie(session)
+
+  return session
 }
 
-login.getCookie = getCookie
+login.switchSessionDevice = (session, device) => {
+  // 确保总是返回一个新对象
+  const newSesstion = Object.assign({}, session, {
+    deviceId: device.deviceID,
+    serialNumber: device.serialNumber
+  })
+
+  newSesstion['cookie'] = getCookie(newSesstion)
+
+  return newSesstion
+}
 
 module.exports = login

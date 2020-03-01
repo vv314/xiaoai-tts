@@ -9,7 +9,8 @@ const API = {
   USBS: 'https://api.mina.mi.com/remote/ubus',
   SERVICE_AUTH: 'https://account.xiaomi.com/pass/serviceLoginAuth2',
   SERVICE_LOGIN: 'https://account.xiaomi.com/pass/serviceLogin',
-  DEVICE_LIST: 'https://api.mina.mi.com/admin/v2/device_list'
+  DEVICE_LIST: 'https://api.mina.mi.com/admin/v2/device_list',
+  SONG_INFO: 'https://api2.mina.mi.com/music/song_info'
 }
 
 module.exports = {

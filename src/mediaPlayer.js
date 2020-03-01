@@ -1,5 +1,8 @@
-const XiaoAiError = require('./lib/XiaoAiError')
 const invoke = require('./lib/invoke')
+const request = require('./lib/request')
+const XiaoAiError = require('./lib/XiaoAiError')
+const { randomString, parseJson } = require('./lib/utils')
+const { API } = require('./const')
 
 const VOLUME_STEP = 5
 const baseParam = {
@@ -20,7 +23,7 @@ async function getPlayStatus(ticket) {
     throw new XiaoAiError(res.code, res.message)
   }
 
-  return res
+  return parseJson(res.data.info)
 }
 
 // 设置音量
@@ -39,9 +42,9 @@ async function setVolume(ticket, volume) {
 
 // 获取音量
 async function getVolume(ticket) {
-  const res = await getPlayStatus(ticket)
+  const status = await getPlayStatus(ticket)
 
-  return JSON.parse(res.data.info).volume
+  return status.volume
 }
 
 // 继续播放
@@ -103,6 +106,28 @@ async function volumeDown(ticket) {
   return setVolume(ticket, volume - VOLUME_STEP)
 }
 
+async function getPlaySong(ticket) {
+  const status = await getPlayStatus(ticket)
+  const songId = status.play_song_detail.global_id
+
+  if (!songId) return {}
+
+  const rep = await request({
+    url: API.SONG_INFO,
+    data: {
+      songId: songId,
+      requestId: randomString(30)
+    },
+    headers: {
+      Cookie: ticket.cookie
+    }
+  }).catch(e => {
+    throw new XiaoAiError(e)
+  })
+
+  return rep
+}
+
 module.exports = {
   play,
   pause,
@@ -112,6 +137,7 @@ module.exports = {
   getVolume,
   volumeUp,
   volumeDown,
+  getPlaySong,
   getPlayStatus,
   togglePlayState
 }

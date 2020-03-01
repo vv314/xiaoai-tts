@@ -31,12 +31,7 @@ function serializeData(data) {
 }
 
 function parseResponseText(text) {
-  return JSON.parse(
-    text
-      .replace(/^&&&START&&&/, '')
-      // 将大数字转为 string, 避免精度丢失
-      .replace(/([\\[:])?(\d+)([,\\}\]])/g, '$1"$2"$3')
-  )
+  return parseJson(text.replace(/^&&&START&&&/, ''))
 }
 
 function randomString(length) {
@@ -49,11 +44,19 @@ function randomString(length) {
     .slice(0, length)
 }
 
+function parseJson(str) {
+  return JSON.parse(
+    // 将大数字转为 string, 避免精度丢失
+    str.replace(/([\\[:])?(\d+)([,\\}\]])/g, '$1"$2"$3')
+  )
+}
+
 module.exports = {
   md5: getHashFn('md5'),
   sha1Base64: getHashFn('sha1', 'base64'),
   isObject,
   getHashFn,
+  parseJson,
   appendParam,
   randomString,
   serializeData,

@@ -71,7 +71,7 @@ function request({
           return rep
         case 'json':
           return rep.json()
-        case 'xiaoai':
+        case 'text':
           return rep.text().then(parseResponseText)
         default:
           return rep.text()

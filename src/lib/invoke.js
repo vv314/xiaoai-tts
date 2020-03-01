@@ -15,6 +15,9 @@ async function invoke({ method = '', message = {}, path = '', ticket = {} }) {
 
   const url = appendParam(API.USBS, querystring.stringify(param))
 
+  // console.log(param)
+  // console.log(ticket.cookie)
+
   return request({
     url,
     method: 'POST',
