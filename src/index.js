@@ -9,8 +9,8 @@ const { setVolume, getVolume, volumeUp, volumeDown } = require('./mediaPlayer')
 class XiaoAi {
   /**
    * 构造函数
-   * @param  {string | Session} user 用户名或 session
-   * @param  {string} [pwd]  密码
+   * @param  {String | Session} user 用户名或 session
+   * @param  {String} [pwd]  密码
    */
   constructor(user, pwd) {
     this.msgQueue = new MessageQueue()
@@ -39,8 +39,8 @@ class XiaoAi {
 
   /**
    * 获取在线设备
-   * @param  {string} name  设备名称（别名）
-   * @param  {string} [deviceId]  设备 id
+   * @param  {String} name  设备名称（别名）
+   * @param  {String} [deviceId]  设备 id
    * @return {Promise<Device[]>}  在线设备列表
    */
   async getDevice(name) {
@@ -57,7 +57,7 @@ class XiaoAi {
 
   /**
    * 设置当前设备
-   * @param  {string} [deviceId]  设备 id
+   * @param  {String} [deviceId]  设备 id
    */
   useDevice(deviceId) {
     this.deviceId = deviceId
@@ -88,8 +88,8 @@ class XiaoAi {
 
   /**
    * 语音朗读
-   * @param  {string} text  文本
-   * @param  {string} [deviceId]  设备 id
+   * @param  {String} text  文本
+   * @param  {String} [deviceId]  设备 id
    * @return {Promise<Response>}  服务端响应
    */
   async say(text, deviceId) {
@@ -97,19 +97,23 @@ class XiaoAi {
   }
 
   /**
-   * 获取设备音量
-   * @param  {number} volume  音量值
-   * @param  {string} [deviceId]  设备 id
+   * 设置设备音量
+   * @param  {Number} volume  音量值
+   * @param  {String} [deviceId]  设备 id
    * @return {Promise<Response>}  服务端响应
    */
   async setVolume(volume, deviceId) {
+    if (typeof volume != 'number') {
+      throw new XiaoAiError(ERR_CODE.INVALID_INPUT)
+    }
+
     return this._call(setVolume, deviceId, volume)
   }
 
   /**
    * 获取设备音量
-   * @param  {string} [deviceId]  设备 id
-   * @return {Promise<number>}  音量值
+   * @param  {String} [deviceId]  设备 id
+   * @return {Promise<Number>}  音量值
    */
   async getVolume(deviceId) {
     return this._call(getVolume, deviceId)
@@ -117,7 +121,7 @@ class XiaoAi {
 
   /**
    * 调高音量，幅度 5
-   * @param  {string} [deviceId]  设备 id
+   * @param  {String} [deviceId]  设备 id
    * @return {Promise<Response>} 服务端响应
    */
   async volumeUp(deviceId) {
@@ -126,7 +130,7 @@ class XiaoAi {
 
   /**
    * 调低音量，幅度 5
-   * @param  {string} [deviceId]  设备 id
+   * @param  {String} [deviceId]  设备 id
    * @return {Promise<Response>} 服务端响应
    */
   async volumeDown(deviceId) {

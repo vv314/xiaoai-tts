@@ -42,8 +42,7 @@ async function getPlayStatus(ticket) {
 // 设置音量
 async function setVolume(ticket, volume) {
   // 边界限制，[0, 100]
-  volume = Math.max(volume, 0)
-  volume = Math.min(volume, 100)
+  volume = Math.min(Math.max(volume, 0), 100)
 
   return invoke({
     method: 'player_set_volume',
