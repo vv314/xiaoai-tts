@@ -158,17 +158,26 @@ const volume = await client.getVolume()
 
 调低音量，幅度 5
 
-#### getPlayStatus()
+#### getStatus()
 
 - Returns: `{Promise<Response>}` 状态信息
 
-获取当前媒体播放状态
+获取设备运行状态
 
-#### getPlaySong()
+#### getSongInfo([songId])
 
+- `songId` `{String}` 歌曲 id
 - Returns: `{Promise<Response | null>}` 媒体信息
 
-获取正在播放的媒体信息
+获取媒体信息
+
+```javascript
+// 获取当前正在播放的媒体信息
+const currentSong = await client.getSongInfo()
+
+// 获取指定的媒体信息
+const songInfo = await client.getSongInfo('6188158356095615000')
+```
 
 #### play()
 

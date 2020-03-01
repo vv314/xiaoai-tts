@@ -11,7 +11,7 @@ const baseParam = {
 }
 
 // 获取当前播放状态
-async function getPlayStatus(ticket) {
+async function getStatus(ticket) {
   const data = await invoke({
     ...baseParam,
     // 确保在 baseParam 之后，以覆盖 baseParam.method
@@ -38,7 +38,7 @@ async function setVolume(ticket, volume) {
 
 // 获取音量
 async function getVolume(ticket) {
-  const status = await getPlayStatus(ticket)
+  const status = await getStatus(ticket)
 
   return status.volume
 }
@@ -102,32 +102,6 @@ async function volumeDown(ticket) {
   return setVolume(ticket, volume - VOLUME_STEP)
 }
 
-async function getPlaySong(ticket) {
-  const status = await getPlayStatus(ticket)
-  const songId = status.play_song_detail.global_id
-
-  if (!songId) return null
-
-  const rep = await request({
-    url: API.SONG_INFO,
-    data: {
-      songId: songId,
-      requestId: randomString(30)
-    },
-    headers: {
-      Cookie: ticket.cookie
-    }
-  }).catch(e => {
-    throw new XiaoAiError(e)
-  })
-
-  if (rep.code != 0) {
-    throw new XiaoAiError(rep.code, rep.message)
-  }
-
-  return rep.data
-}
-
 module.exports = {
   play,
   pause,
@@ -135,9 +109,8 @@ module.exports = {
   next,
   setVolume,
   getVolume,
+  getStatus,
   volumeUp,
   volumeDown,
-  getPlaySong,
-  getPlayStatus,
   togglePlayState
 }

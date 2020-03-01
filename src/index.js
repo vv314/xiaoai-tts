@@ -1,6 +1,7 @@
 const tts = require('./tts')
 const login = require('./login')
 const getDevice = require('./getDevice')
+const getSongInfo = require('./getSongInfo')
 const XiaoAiError = require('./lib/XiaoAiError')
 const MessageQueue = require('./lib/MessageQueue')
 const mediaPlayer = require('./mediaPlayer')
@@ -195,11 +196,11 @@ class XiaoAi {
   }
 
   /**
-   * 获取当前媒体播放状态
+   * 获取设备运行状态
    * @return {Promise<Response>} 服务端响应
    */
-  async getPlayStatus() {
-    return this._call(mediaPlayer.getPlayStatus)
+  async getStatus() {
+    return this._call(mediaPlayer.getStatus)
   }
 
   /**
@@ -207,8 +208,8 @@ class XiaoAi {
    * @return {Promise<Object | null>} 媒体信息
    *
    */
-  async getPlaySong() {
-    return this._call(mediaPlayer.getPlaySong)
+  async getSongInfo(songId) {
+    return this._call(getSongInfo, songId)
   }
 }
 
