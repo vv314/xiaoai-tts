@@ -17,7 +17,9 @@ async function getDevice(cookie) {
     throw new XiaoAiError(e)
   })
 
-  if (rep.code != 0) return []
+  if (rep.code != 0) {
+    throw new XiaoAiError(rep.code, rep.message)
+  }
 
   const liveDevices = rep.data.filter(d => d.presence == 'online')
 
