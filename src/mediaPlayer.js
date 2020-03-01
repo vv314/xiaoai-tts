@@ -9,12 +9,18 @@ const baseParam = {
 
 // 获取当前播放状态
 async function getPlayStatus(ticket) {
-  return invoke({
+  const res = await invoke({
     ...baseParam,
     // 确保在 baseParam 之后，以覆盖 baseParam.method
     method: 'player_get_play_status',
     ticket
   })
+
+  if (res.code != 0) {
+    throw new XiaoAiError(res.code, res.message)
+  }
+
+  return res
 }
 
 // 设置音量
@@ -34,10 +40,6 @@ async function setVolume(ticket, volume) {
 // 获取音量
 async function getVolume(ticket) {
   const res = await getPlayStatus(ticket)
-
-  if (res.code != 0) {
-    throw new XiaoAiError(res.code, res.message)
-  }
 
   return JSON.parse(res.data.info).volume
 }
