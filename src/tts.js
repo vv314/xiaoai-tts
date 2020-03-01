@@ -4,10 +4,10 @@ const XiaoAiError = require('./XiaoAiError')
 const { appendParam, randomString } = require('./lib/utils')
 const { API } = require('./const')
 
-function getReqParam(msg, deviceId) {
+function getReqParam(text, deviceId) {
   const param = {
     deviceId: deviceId,
-    message: JSON.stringify({ text: msg }),
+    message: JSON.stringify({ text: text }),
     method: 'text_to_speech',
     path: 'mibrain',
     requestId: randomString(30)
@@ -16,8 +16,8 @@ function getReqParam(msg, deviceId) {
   return querystring.stringify(param)
 }
 
-function tts(ticket, msg) {
-  const param = getReqParam(msg, ticket.deviceId)
+function tts(ticket, text = '') {
+  const param = getReqParam(text, ticket.deviceId)
   const url = appendParam(API.USBS, param)
 
   return request({
