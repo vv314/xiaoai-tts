@@ -78,7 +78,9 @@ function genClientSign(nonce, secrity) {
 }
 
 async function loginByAccount(user, pwd) {
-  if (!user || !pwd) throw new XiaoAiError(ERR_CODE.INVALID_ARG)
+  if (!user || !pwd) {
+    throw new XiaoAiError(ERR_CODE.INVALID_INPUT)
+  }
 
   const sign = await getLoginSign()
   const authInfo = await serviceAuth(sign, user, pwd)
@@ -99,7 +101,9 @@ async function loginByAccount(user, pwd) {
 async function loginByToken(user) {
   const { userId, serviceToken } = user
 
-  if (!userId || !serviceToken) throw new XiaoAiError(ERR_CODE.INVALID_ARG)
+  if (!userId || !serviceToken) {
+    throw new XiaoAiError(ERR_CODE.INVALID_INPUT)
+  }
 
   return {
     userId: userId,

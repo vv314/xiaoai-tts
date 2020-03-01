@@ -16,15 +16,15 @@ function getReqParam(msg, deviceId) {
   return querystring.stringify(param)
 }
 
-function tts(msg, { cookie, deviceId }) {
-  const param = getReqParam(msg, deviceId)
+function tts(ticket, msg) {
+  const param = getReqParam(msg, ticket.deviceId)
   const url = appendParam(API.USBS, param)
 
   return request({
     url,
     method: 'POST',
     headers: {
-      Cookie: cookie
+      Cookie: ticket.cookie
     }
   }).catch(e => {
     throw new XiaoAiError(e)

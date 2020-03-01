@@ -1,14 +1,23 @@
 const tts = require('./tts')
 const login = require('./login')
-const getDevice = require('./getDevice')
+const getDevices = require('./getDevices')
 const XiaoAiError = require('./XiaoAiError')
 const MessageQueue = require('./lib/MessageQueue')
 const { ERR_CODE } = XiaoAiError
+const { setVolume, getVolume, volumeUp, volumeDown } = require('./mediaPlayer')
 
 class XiaoAi {
+  /**
+   * 构造函数
+   * @param  {string | Session} user 用户名或 session
+   * @param  {string} [pwd]  密码
+   */
   constructor(user, pwd) {
     this.msgQueue = new MessageQueue()
     this.session = login(user, pwd)
+
+    // 可用设备列表
+    this.devices = []
     this.deviceId = ''
 
     this.getDevice().then(devices => {
@@ -18,33 +27,47 @@ class XiaoAi {
     })
   }
 
+  /**
+   * 获取 Session
+   * @return {Promise<Session>} Session 对象
+   */
   async connect() {
-    const ss = await this.session
+    const { userId, serviceToken } = await this.session
 
-    return {
-      userId: ss.userId,
-      serviceToken: ss.serviceToken
-    }
+    return { userId, serviceToken }
   }
 
+  /**
+   * 获取在线设备
+   * @param  {string} name  设备名称（别名）
+   * @param  {string} [deviceId]  设备 id
+   * @return {Promise<Device[]>}  在线设备列表
+   */
   async getDevice(name) {
     const { cookie } = await this.session
-    const devices = await getDevice(cookie)
+    const devices = await getDevices(cookie)
+
+    // 更新在线设备
+    this.devices = devices
 
     if (!name) return devices
 
     return devices.find(e => e.name.includes(name))
   }
 
+  /**
+   * 设置当前设备
+   * @param  {string} [deviceId]  设备 id
+   */
   useDevice(deviceId) {
     this.deviceId = deviceId
   }
 
-  async say(msg, deviceId = this.deviceId) {
+  async _call(method, deviceId = this.deviceId, param) {
     const { cookie } = await this.session
 
     if (deviceId) {
-      return tts(msg, { cookie, deviceId })
+      return method({ cookie, deviceId }, param)
     }
 
     const devices = await this.getDevice()
@@ -60,7 +83,54 @@ class XiaoAi {
     // 后续沿用此次查询结果
     this.useDevice(targetId)
 
-    return tts(msg, { cookie, deviceId: targetId })
+    return method({ cookie, deviceId: targetId }, param)
+  }
+
+  /**
+   * 语音朗读
+   * @param  {string} text  文本
+   * @param  {string} [deviceId]  设备 id
+   * @return {Promise<Response>}  服务端响应
+   */
+  async say(text, deviceId) {
+    return this._call(tts, deviceId, text)
+  }
+
+  /**
+   * 获取设备音量
+   * @param  {number} volume  音量值
+   * @param  {string} [deviceId]  设备 id
+   * @return {Promise<Response>}  服务端响应
+   */
+  async setVolume(volume, deviceId) {
+    return this._call(setVolume, deviceId, volume)
+  }
+
+  /**
+   * 获取设备音量
+   * @param  {string} [deviceId]  设备 id
+   * @return {Promise<number>}  音量值
+   */
+  async getVolume(deviceId) {
+    return this._call(getVolume, deviceId)
+  }
+
+  /**
+   * 调高音量，幅度 5
+   * @param  {string} [deviceId]  设备 id
+   * @return {Promise<Response>} 服务端响应
+   */
+  async volumeUp(deviceId) {
+    return this._call(volumeUp, deviceId)
+  }
+
+  /**
+   * 调低音量，幅度 5
+   * @param  {string} [deviceId]  设备 id
+   * @return {Promise<Response>} 服务端响应
+   */
+  async volumeDown(deviceId) {
+    return this._call(volumeDown, deviceId)
   }
 }
 
