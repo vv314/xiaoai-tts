@@ -1,10 +1,9 @@
 const tts = require('./tts')
 const login = require('./login')
 const getDevice = require('./getDevice')
-const getSongInfo = require('./getSongInfo')
 const XiaoAiError = require('./lib/XiaoAiError')
 const MessageQueue = require('./lib/MessageQueue')
-const mediaPlayer = require('./mediaPlayer')
+const player = require('./player')
 const { ERR_CODE } = XiaoAiError
 
 class XiaoAi {
@@ -28,6 +27,8 @@ class XiaoAi {
 
       return login.switchSessionDevice(session, this.currDevice)
     })
+
+    this.player = player
   }
 
   /**
@@ -128,7 +129,7 @@ class XiaoAi {
       throw new XiaoAiError(ERR_CODE.INVALID_INPUT)
     }
 
-    return this._call(mediaPlayer.setVolume, volume)
+    return this._call(player.setVolume, volume)
   }
 
   /**
@@ -136,7 +137,7 @@ class XiaoAi {
    * @return {Promise<Number>}  音量值
    */
   async getVolume() {
-    return this._call(mediaPlayer.getVolume)
+    return this._call(player.getVolume)
   }
 
   /**
@@ -144,7 +145,7 @@ class XiaoAi {
    * @return {Promise<Response>} 服务端响应
    */
   async volumeUp() {
-    return this._call(mediaPlayer.volumeUp)
+    return this._call(player.volumeUp)
   }
 
   /**
@@ -152,7 +153,7 @@ class XiaoAi {
    * @return {Promise<Response>} 服务端响应
    */
   async volumeDown() {
-    return this._call(mediaPlayer.volumeDown)
+    return this._call(player.volumeDown)
   }
 
   /**
@@ -160,7 +161,7 @@ class XiaoAi {
    * @return {Promise<Response>} 服务端响应
    */
   async play() {
-    return this._call(mediaPlayer.play)
+    return this._call(player.play)
   }
 
   /**
@@ -168,7 +169,7 @@ class XiaoAi {
    * @return {Promise<Response>} 服务端响应
    */
   async pause() {
-    return this._call(mediaPlayer.pause)
+    return this._call(player.pause)
   }
 
   /**
@@ -176,7 +177,7 @@ class XiaoAi {
    * @return {Promise<Response>} 服务端响应
    */
   async prev() {
-    return this._call(mediaPlayer.prev)
+    return this._call(player.prev)
   }
 
   /**
@@ -184,7 +185,7 @@ class XiaoAi {
    * @return {Promise<Response>} 服务端响应
    */
   async next() {
-    return this._call(mediaPlayer.next)
+    return this._call(player.next)
   }
 
   /**
@@ -192,7 +193,7 @@ class XiaoAi {
    * @return {Promise<Response>} 服务端响应
    */
   async togglePlayState() {
-    return this._call(mediaPlayer.togglePlayState)
+    return this._call(player.togglePlayState)
   }
 
   /**
@@ -200,7 +201,7 @@ class XiaoAi {
    * @return {Promise<Response>} 服务端响应
    */
   async getStatus() {
-    return this._call(mediaPlayer.getStatus)
+    return this._call(player.getStatus)
   }
 
   /**
@@ -209,7 +210,11 @@ class XiaoAi {
    *
    */
   async getSongInfo(songId) {
-    return this._call(getSongInfo, songId)
+    return this._call(player.getSongInfo, songId)
+  }
+
+  async getPlaylist(data) {
+    return this._call(player.getPlaylist, data)
   }
 }
 

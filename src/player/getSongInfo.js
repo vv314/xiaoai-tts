@@ -1,8 +1,8 @@
-const request = require('./lib/request')
-const XiaoAiError = require('./lib/XiaoAiError')
-const { randomString } = require('./lib/utils')
-const { getStatus } = require('./mediaPlayer')
-const { API } = require('./const')
+const request = require('../lib/request')
+const XiaoAiError = require('../lib/XiaoAiError')
+const { randomString } = require('../lib/utils')
+const { getStatus } = require('./getStatus')
+const { API } = require('../const')
 
 async function getSongInfo(ticket, songId) {
   if (!songId) {

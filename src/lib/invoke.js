@@ -4,7 +4,7 @@ const request = require('./request')
 const { API } = require('../const')
 const { appendParam, randomString } = require('./utils')
 
-async function invoke({ method = '', message = {}, path = '', ticket = {} }) {
+async function invoke(ticket = {}, { method = '', message = {}, path = '' }) {
   const param = {
     message: JSON.stringify(message),
     requestId: randomString(30),
