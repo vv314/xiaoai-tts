@@ -164,32 +164,17 @@ const volume = await client.getVolume()
 
 获取设备运行状态
 
-#### getSongInfo([songId])
-
-- `songId` `{String}` 歌曲 id
-- Returns: `{Promise<Response | null>}` 媒体信息
-
-获取媒体信息
-
-```javascript
-// 获取当前正在播放的媒体信息
-const currentSong = await client.getSongInfo()
-
-// 获取指定的媒体信息
-const songInfo = await client.getSongInfo('6188158356095615000')
-```
-
 #### play()
 
 - Returns: `{Promise<Response>}`
 
-继续播放媒体
+继续播放
 
 #### pause()
 
 - Returns: `{Promise<Response>}`
 
-暂停播放媒体
+暂停播放
 
 #### togglePlayState()
 
@@ -208,3 +193,33 @@ const songInfo = await client.getSongInfo('6188158356095615000')
 - Returns: `{Promise<Response>}`
 
 播放下一曲
+
+#### getSongInfo([songId])
+
+- `songId` `{String}` 歌曲 id
+- Returns: `{Promise<Response | null>}` 歌曲信息
+
+获取歌曲信息，默认返回当前正在播放的歌曲信息。
+
+```javascript
+// 获取当前正在播放的歌曲信息
+const currentSong = await client.getSongInfo()
+
+// 查询指定的歌曲信息
+const songInfo = await client.getSongInfo('7519904358300484678')
+```
+
+#### getMyPlaylist([listId])
+
+- `listId` `{String}` 歌单 id
+- Returns: `{Promise<Object[]>}` 歌曲信息
+
+获取用户自建歌单列表，当指定 `listId` 时，将返回目标歌单内的歌曲列表
+
+```javascript
+// 获取歌单列表
+const myPlaylist = await client.getMyPlaylist()
+
+// 获取歌单内的歌曲列表
+const songList = await client.getMyPlaylist('337361232731772372')
+```
