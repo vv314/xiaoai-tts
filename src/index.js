@@ -201,20 +201,7 @@ class XiaoAi {
    * @return {Promise<Object[]>}
    */
   async getMyPlaylist(listId) {
-    const playlist = await this._call(player.getPlaylist)
-
-    if (!listId) return playlist
-
-    const songList = playlist.find(item => item.id == listId)
-
-    if (!songList) {
-      throw new XiaoAiError(ERR_CODE.INVALID_PLAYLIST_ID, { listId })
-    }
-
-    return this._call(player.getPlaylistSongs, {
-      listId,
-      count: songList.songCount
-    })
+    return this._call(player.getMyPlaylist, listId)
   }
 }
 

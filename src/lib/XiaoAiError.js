@@ -3,8 +3,7 @@ const C = {
   INVALID_INPUT: 1,
   NO_DEVICE: 2,
   UBUS_ERR: 3,
-  INVALID_RESULT: 4,
-  INVALID_PLAYLIST_ID: 5
+  INVALID_RESULT: 4
 }
 
 const errCodeMap = {
@@ -12,8 +11,7 @@ const errCodeMap = {
   [C.NO_DEVICE]: '未找到在线设备，请检查设备连接',
   [C.INVALID_INPUT]: '参数不合法，请查阅文档',
   [C.INVALID_RESULT]: '接口错误',
-  [C.UBUS_ERR]: '请检查设备连接',
-  [C.INVALID_PLAYLIST_ID]: '未找到歌单'
+  [C.UBUS_ERR]: '请检查设备连接'
 }
 
 function isHttpError(e) {

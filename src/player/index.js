@@ -28,7 +28,18 @@ async function volumeDown(ticket) {
   return setVolume(ticket, volume - VOLUME_STEP)
 }
 
-async function playSongs() {}
+async function getMyPlaylist(listId) {
+  const playlist = await getPlaylist()
+
+  if (!listId) return playlist
+
+  const songList = playlist.find(item => item.id == listId)
+
+  // 一次展示全部
+  const showCount = songList ? songList.songCount : 0
+
+  return getPlaylistSongs({ listId, count: showCount })
+}
 
 module.exports = {
   getStatus,
@@ -42,8 +53,7 @@ module.exports = {
   setVolume,
   setPlayLoop,
   getSongInfo,
-  getPlaylist,
+  getMyPlaylist,
   togglePlayState,
-  getPlaylistSongs,
   playAlbumPlaylist
 }
