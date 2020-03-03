@@ -1,7 +1,9 @@
 const togglePlayState = require('./togglePlayState')
-const playAlbum = require('./playAlbum')
+const getPlaylistSongs = require('./getPlaylistSongs')
+const playAlbumPlaylist = require('./playAlbumPlaylist')
 const getSongInfo = require('./getSongInfo')
 const getPlaylist = require('./getPlaylist')
+const setPlayLoop = require('./setPlayLoop')
 const getStatus = require('./getStatus')
 const getVolume = require('./getVolume')
 const setVolume = require('./setVolume')
@@ -26,20 +28,22 @@ async function volumeDown(ticket) {
   return setVolume(ticket, volume - VOLUME_STEP)
 }
 
-async function getPlayInfo() {}
+async function playSongs() {}
 
 module.exports = {
   getStatus,
-  playAlbum,
+  volumeDown,
+  volumeUp,
   play,
   next,
   prev,
   pause,
-  volumeUp,
-  volumeDown,
   getVolume,
   setVolume,
+  setPlayLoop,
   getSongInfo,
   getPlaylist,
-  togglePlayState
+  togglePlayState,
+  getPlaylistSongs,
+  playAlbumPlaylist
 }

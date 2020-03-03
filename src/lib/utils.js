@@ -50,9 +50,10 @@ function parseJson(str) {
   try {
     data = JSON.parse(
       // 将大数字转为 string, 避免精度丢失
-      str.replace(/([\\[:])?(\d+)([,\\}\]])/g, '$1"$2"$3')
+      str.replace(/:([0-9]{15,}),/g, ':"$1",')
     )
   } catch (e) {
+    console.log('err', e)
     data = JSON.parse(str)
   }
 

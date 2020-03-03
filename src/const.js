@@ -10,6 +10,7 @@ const API = {
   SERVICE_AUTH: 'https://account.xiaomi.com/pass/serviceLoginAuth2',
   SERVICE_LOGIN: 'https://account.xiaomi.com/pass/serviceLogin',
   PLAYLIST: 'https://api2.mina.mi.com/music/playlist/v2/lists',
+  PLAYLIST_SONGS: 'https://api2.mina.mi.com/music/playlist/v2/songs',
   DEVICE_LIST: 'https://api.mina.mi.com/admin/v2/device_list',
   SONG_INFO: 'https://api2.mina.mi.com/music/song_info'
 }

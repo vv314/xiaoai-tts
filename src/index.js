@@ -1,9 +1,10 @@
 const tts = require('./tts')
 const login = require('./login')
+const player = require('./player')
 const getDevice = require('./getDevice')
 const XiaoAiError = require('./lib/XiaoAiError')
 const MessageQueue = require('./lib/MessageQueue')
-const player = require('./player')
+const { isObject } = require('./lib/utils')
 const { ERR_CODE } = XiaoAiError
 
 class XiaoAi {
@@ -13,17 +14,15 @@ class XiaoAi {
    * @param  {String} [pwd]  密码
    */
   constructor(user, pwd) {
-    // 可用设备列表
-    this.devices = []
     this.currDevice = null
     this.msgQueue = new MessageQueue()
 
     this.session = login(user, pwd).then(async session => {
-      this.devices = await getDevice(session.cookie)
+      const devices = await getDevice(session.cookie)
 
-      if (!this.devices.length) return session
+      if (!devices.length) return session
 
-      this.currDevice = this.devices[0]
+      this.currDevice = devices[0]
 
       return login.switchSessionDevice(session, this.currDevice)
     })
@@ -54,9 +53,6 @@ class XiaoAi {
     const { cookie } = await this.session
     const devices = await getDevice(cookie)
 
-    // 更新在线设备
-    this.devices = devices
-
     if (!name) return devices
 
     const target = devices.find(e => e.name.includes(name))
@@ -68,10 +64,17 @@ class XiaoAi {
    * 使用指定设备
    * @param  {String} [deviceId]  设备
    */
-  async useDevice(deviceId) {
+  async useDevice(deviceId, isTrusted) {
     let session = await this.session
-    const devices = await getDevice(session.cookie)
-    const device = devices.find(e => e.deviceID == deviceId)
+    let device
+
+    if (isObject(deviceId) && isTrusted) {
+      device = deviceId
+    } else {
+      const devices = await getDevice(session.cookie)
+
+      device = devices.find(e => e.deviceID == deviceId)
+    }
 
     if (!device) {
       throw new XiaoAiError(ERR_CODE.NO_DEVICE)
@@ -83,31 +86,11 @@ class XiaoAi {
     this.session = Promise.resolve(session)
   }
 
-  async _call(method, param) {
-    if (this.currDevice) {
-      const { cookie } = await this.session
-      const { deviceID } = this.currDevice
+  async _call(method, args = []) {
+    const { cookie, deviceId } = await this.session
+    const ticket = { cookie, deviceId }
 
-      return method({ cookie, deviceId: deviceID }, param)
-    }
-
-    const devices = await this.getDevice()
-
-    if (devices.length == 0) {
-      throw new XiaoAiError(ERR_CODE.NO_DEVICE)
-    }
-
-    // 当查询到多个设备，并且未指定设备 时，
-    // 默认使用第一个作为当前设备
-    const device = devices[0]
-
-    // 后续沿用此次查询结果
-    await this.useDevice(device.deviceID)
-
-    // 确保在 useDevice 成功后获取
-    const { cookie } = await this.session
-
-    return method({ cookie, deviceId: device.deviceID }, param)
+    return method.apply(null, [ticket, ...args])
   }
 
   /**
@@ -116,7 +99,7 @@ class XiaoAi {
    * @return {Promise<Response>}  服务端响应
    */
   async say(text) {
-    return this._call(tts, text)
+    return this._call(tts, arguments)
   }
 
   /**
@@ -129,7 +112,7 @@ class XiaoAi {
       throw new XiaoAiError(ERR_CODE.INVALID_INPUT)
     }
 
-    return this._call(player.setVolume, volume)
+    return this._call(player.setVolume, arguments)
   }
 
   /**
@@ -207,14 +190,21 @@ class XiaoAi {
   /**
    * 获取当前播放媒体信息
    * @return {Promise<Object | null>} 媒体信息
-   *
    */
   async getSongInfo(songId) {
-    return this._call(player.getSongInfo, songId)
+    return this._call(player.getSongInfo, arguments)
   }
 
-  async getPlaylist(data) {
-    return this._call(player.getPlaylist, data)
+  /**
+   * 获取我的歌单
+   * @return {Promise<Object[]>}
+   */
+  async getPlaylist() {
+    return this._call(player.getPlaylist)
+  }
+
+  async getPlaylistSongs(data) {
+    return this._call(player.getPlaylistSongs, arguments)
   }
 }
 

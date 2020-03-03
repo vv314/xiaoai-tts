@@ -35,7 +35,6 @@ function getCookie({
 async function getLoginSign() {
   const info = await request({
     url: API.SERVICE_LOGIN,
-    type: 'text',
     data: commonParam
   })
 
@@ -53,7 +52,6 @@ async function serviceAuth(signData, user, pwd) {
   const AuthInfo = await request({
     url: API.SERVICE_AUTH,
     method: 'post',
-    type: 'text',
     data: data,
     headers: {
       Cookie: `deviceId=${APP_DEVICE_ID};sdkVersion=${SDK_VER}`

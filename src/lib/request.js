@@ -9,12 +9,13 @@ class HttpError extends Error {
 
     this.status = rep.status
     this.statusText = rep.statusText
+    this.response = rep.response
 
     this.message = [
       'Request Error',
       `url: ${rep.url}`,
       `status: ${rep.status}`,
-      `statusText: ${rep.statusText}`
+      `response: ${rep.response}`
     ].join('\n')
     this.message += '\n'
   }
@@ -64,21 +65,24 @@ function request({
     }
   }
 
-  return fetch(url, options).then(rep => {
+  return fetch(url, options).then(async rep => {
     if (rep.status == 200) {
       switch (type) {
         case 'raw':
           return rep
         case 'json':
-          return rep.json()
-        case 'text':
           return rep.text().then(parseResponseText)
         default:
           return rep.text()
       }
     }
 
-    throw new HttpError(rep)
+    throw new HttpError({
+      url,
+      response: await rep.text(),
+      status: rep.status,
+      statusText: rep.statusText
+    })
   })
 }
 

@@ -1,9 +1,9 @@
-const invoke = require('../lib/invoke')
+const { ubus } = require('../lib/invoke')
 
 // 继续播放
 async function next(ticket) {
-  return invoke(ticket, {
-    message: { action: 'next', media: 'common' },
+  return ubus(ticket, {
+    message: { action: 'next' },
     method: 'player_play_operation',
     path: 'mediaplayer'
   })

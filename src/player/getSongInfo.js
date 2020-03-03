@@ -1,6 +1,4 @@
-const request = require('../lib/request')
-const XiaoAiError = require('../lib/XiaoAiError')
-const { randomString } = require('../lib/utils')
+const invoke = require('../lib/invoke')
 const { getStatus } = require('./getStatus')
 const { API } = require('../const')
 
@@ -13,24 +11,13 @@ async function getSongInfo(ticket, songId) {
     if (!songId) return null
   }
 
-  const rep = await request({
+  return await invoke({
+    cookie: ticket.cookie,
     url: API.SONG_INFO,
     data: {
-      songId: songId,
-      requestId: randomString(30)
-    },
-    headers: {
-      Cookie: ticket.cookie
+      songId: songId
     }
-  }).catch(e => {
-    throw new XiaoAiError(e)
   })
-
-  if (rep.code != 0) {
-    throw new XiaoAiError(rep.code, rep.message)
-  }
-
-  return rep.data
 }
 
 module.exports = getSongInfo
