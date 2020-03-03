@@ -77,7 +77,7 @@ class XiaoAi {
     }
 
     if (!device) {
-      throw new XiaoAiError(ERR_CODE.NO_DEVICE)
+      throw new XiaoAiError(ERR_CODE.NO_DEVICE, { deviceId })
     }
 
     session = login.switchSessionDevice(session, device)
@@ -86,7 +86,7 @@ class XiaoAi {
     this.session = Promise.resolve(session)
   }
 
-  async _call(method, args = []) {
+  async _call(method, ...args) {
     const { cookie, deviceId } = await this.session
     const ticket = { cookie, deviceId }
 
@@ -99,7 +99,7 @@ class XiaoAi {
    * @return {Promise<Response>}  服务端响应
    */
   async say(text) {
-    return this._call(tts, arguments)
+    return this._call(tts, text)
   }
 
   /**
@@ -112,7 +112,7 @@ class XiaoAi {
       throw new XiaoAiError(ERR_CODE.INVALID_INPUT)
     }
 
-    return this._call(player.setVolume, arguments)
+    return this._call(player.setVolume, volume)
   }
 
   /**
@@ -192,19 +192,29 @@ class XiaoAi {
    * @return {Promise<Object | null>} 媒体信息
    */
   async getSongInfo(songId) {
-    return this._call(player.getSongInfo, arguments)
+    return this._call(player.getSongInfo, songId)
   }
 
   /**
    * 获取我的歌单
+   * @param  {String} listId  歌单 id
    * @return {Promise<Object[]>}
    */
-  async getPlaylist() {
-    return this._call(player.getPlaylist)
-  }
+  async getMyPlaylist(listId) {
+    const playlist = await this._call(player.getPlaylist)
 
-  async getPlaylistSongs(data) {
-    return this._call(player.getPlaylistSongs, arguments)
+    if (!listId) return playlist
+
+    const songList = playlist.find(item => item.id == listId)
+
+    if (!songList) {
+      throw new XiaoAiError(ERR_CODE.INVALID_PLAYLIST_ID, { listId })
+    }
+
+    return this._call(player.getPlaylistSongs, {
+      listId,
+      count: songList.songCount
+    })
   }
 }
 
