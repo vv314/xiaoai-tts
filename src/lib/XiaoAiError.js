@@ -3,7 +3,8 @@ const C = {
   INVALID_INPUT: 1,
   NO_DEVICE: 2,
   UBUS_ERR: 3,
-  INVALID_RESULT: 4
+  INVALID_RESULT: 4,
+  INVALID_PLAYLIST_ID: 5
 }
 
 const errCodeMap = {
@@ -11,7 +12,8 @@ const errCodeMap = {
   [C.NO_DEVICE]: '未找到在线设备，请检查设备连接',
   [C.INVALID_INPUT]: '参数不合法，请查阅文档',
   [C.INVALID_RESULT]: '接口错误',
-  [C.UBUS_ERR]: '请检查设备连接'
+  [C.UBUS_ERR]: '请检查设备连接',
+  [C.INVALID_PLAYLIST_ID]: '未找到歌单'
 }
 
 function isHttpError(e) {
@@ -36,13 +38,14 @@ class XiaoAiError extends Error {
       this.response = errMsg
 
       message = errCodeMap[code]
-      errMsg = JSON.stringify(errMsg)
     } else {
       // 运行时错误
       this.type = 'runtime'
 
       message = errCodeMap[code] || ''
     }
+
+    errMsg = typeof errMsg == 'object' ? JSON.stringify(errMsg) : errMsg
 
     this.message = errMsg ? `${errMsg} - ${message}` : message
     this.message += '\n'
