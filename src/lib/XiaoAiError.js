@@ -1,3 +1,4 @@
+// 大于 200 的为 http code
 const C = {
   AURH_ERR: 401,
   INVALID_INPUT: 1,
@@ -28,8 +29,13 @@ class XiaoAiError extends Error {
       // http 请求错误
       this.type = 'fetch'
 
-      errMsg = code.message + '\n' + code.statusText
-      message = '网络请求错误'
+      if (errCodeMap[code.status]) {
+        // errMsg = code.statusText
+        message = errCodeMap[code.status]
+      } else {
+        errMsg = code.message + '\n' + code.statusText
+        message = '网络请求错误'
+      }
     } else if (code == C.INVALID_RESULT) {
       // 服务端响应错误
       this.type = 'response'
