@@ -219,3 +219,10 @@ const myPlaylist = await client.getMyPlaylist()
 // 获取歌单内的歌曲列表
 const songList = await client.getMyPlaylist('337361232731772372')
 ```
+
+#### playUrl(url)
+
+- `url` `{String}` 音频地址
+- Returns: `{Promise<Response>}`
+
+播放在线音频

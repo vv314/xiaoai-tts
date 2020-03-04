@@ -182,16 +182,37 @@ class XiaoAi {
   /**
    * 获取设备运行状态
    * @return {Promise<Response>} 服务端响应
+   *
+   * Response.status: 2 播放状态
+   * Response.volume: number 音量
+   * Response.loop_type: number 循环类型，0 单曲循环，1 列表循环，3 列表随机
+   * Response.media_type: 4 媒体类型
+   * Response.play_song_detail: SongDetail
+   * SongDetail.global_id: string 媒体 id
+   * SongDetail.cp_origin: string 来源，qingting 蜻蜓FM
+   * SongDetail.cp_id: string 来源 id
+   * SongDetail.category: string 类别
+   * SongDetail.duration: number 时长
+   * SongDetail.position: number 进度
+   * Response.track_list: string[] 列表
+   * Response.extra_track_list: trackInfo[]
+   * trackInfo.global_id: string
+   * trackInfo.cp_origin: string qingting
+   * trackInfo.cp_id: string
+   * trackInfo.category: string
    */
   async getStatus() {
     return this._call(player.getStatus)
   }
 
   /**
-   * 获取当前播放媒体信息
+   * 查询歌曲信息
+   * @param  {String} songId  歌单 id
    * @return {Promise<Object | null>} 媒体信息
    */
   async getSongInfo(songId) {
+    if (!songId) throw new XiaoAiError(ERR_CODE.INVALID_INPUT)
+
     return this._call(player.getSongInfo, songId)
   }
 
@@ -202,6 +223,15 @@ class XiaoAi {
    */
   async getMyPlaylist(listId) {
     return this._call(player.getMyPlaylist, listId)
+  }
+
+  /**
+   * 获取我的歌单
+   * @param  {String} url 音频地址
+   * @return {Promise<Object[]>}
+   */
+  async playUrl(url) {
+    return this._call(player.playUrl, url)
   }
 }
 
