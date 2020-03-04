@@ -4,7 +4,7 @@
 
 小爱音箱自定义文本朗读。
 
-> 启发自 http://www.miui.com/thread-14071212-1-1.html
+> 不止是 TTS
 
 ## 安装
 
