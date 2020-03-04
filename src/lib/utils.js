@@ -1,4 +1,5 @@
 const { createHash, randomBytes } = require('crypto')
+const parseBigIntJson = require('./parseBigIntJson')
 
 function getHashFn(algorithm, encoding = 'hex') {
   return data => {
@@ -31,7 +32,7 @@ function serializeData(data) {
 }
 
 function parseResponseText(text) {
-  return parseJson(text.replace(/^&&&START&&&/, ''))
+  return parseBigIntJson(text.replace(/^&&&START&&&/, ''))
 }
 
 function randomString(length) {
@@ -44,28 +45,11 @@ function randomString(length) {
     .slice(0, length)
 }
 
-function parseJson(str) {
-  let data
-
-  try {
-    data = JSON.parse(
-      // 将大数字转为 string, 避免精度丢失
-      str.replace(/:([0-9]{15,}),/g, ':"$1",')
-    )
-  } catch (e) {
-    console.log('err', e)
-    data = JSON.parse(str)
-  }
-
-  return data
-}
-
 module.exports = {
   md5: getHashFn('md5'),
   sha1Base64: getHashFn('sha1', 'base64'),
   isObject,
   getHashFn,
-  parseJson,
   appendParam,
   randomString,
   serializeData,

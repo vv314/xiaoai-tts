@@ -1,5 +1,5 @@
 const { ubus } = require('../lib/invoke')
-const { parseJson } = require('../lib/utils')
+const parseJson = require('../lib/parseBigIntJson')
 
 // 获取当前播放状态
 async function getStatus(ticket) {
