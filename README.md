@@ -194,18 +194,14 @@ const volume = await client.getVolume()
 
 播放下一曲
 
-#### getSongInfo([songId])
+#### getSongInfo(songId)
 
 - `songId` `{String}` 歌曲 id
 - Returns: `{Promise<Response | null>}` 歌曲信息
 
-获取歌曲信息，默认返回当前正在播放的歌曲信息。
+查询歌曲信息
 
 ```javascript
-// 获取当前正在播放的歌曲信息
-const currentSong = await client.getSongInfo()
-
-// 查询指定的歌曲信息
 const songInfo = await client.getSongInfo('7519904358300484678')
 ```
 
@@ -214,7 +210,7 @@ const songInfo = await client.getSongInfo('7519904358300484678')
 - `listId` `{String}` 歌单 id
 - Returns: `{Promise<Object[]>}` 歌曲信息
 
-获取用户自建歌单列表，当指定 `listId` 时，将返回目标歌单内的歌曲列表
+获取用户自建歌单，当指定 `listId` 时，将返回目标歌单内的歌曲列表
 
 ```javascript
 // 获取歌单列表
