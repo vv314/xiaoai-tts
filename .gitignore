@@ -6,6 +6,8 @@
 
 /test
 
+/mico_*
+
 # misc
 .DS_Store
 .vscode
