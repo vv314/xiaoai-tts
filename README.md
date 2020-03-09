@@ -123,6 +123,16 @@ client.say('你好，我是卧室的小爱')
 const Session = await client.connect()
 ```
 
+#### test()
+
+- Returns: `{Promise<Response>}`
+
+连接测试
+
+```javascript
+client.test()
+```
+
 ### 媒体控制
 
 #### setVolume(volume)
@@ -226,3 +236,8 @@ const songList = await client.getMyPlaylist('337361232731772372')
 - Returns: `{Promise<Response>}`
 
 播放在线音频
+
+## 参考链接
+
+- https://bbs.hassbian.com/thread-7060-1-7.html
+- https://blog.csdn.net/leekwen/article/details/82378639

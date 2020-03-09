@@ -15,8 +15,13 @@ const API = {
   SONG_INFO: 'https://api2.mina.mi.com/music/song_info'
 }
 
+const SOUND = {
+  TIMER: '/usr/share/sound/timer_default.opus'
+}
+
 module.exports = {
   API,
+  SOUND,
   APP_UA,
   MINA_UA,
   SDK_VER,

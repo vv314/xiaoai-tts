@@ -4,6 +4,7 @@ const player = require('./player')
 const getDevice = require('./getDevice')
 const XiaoAiError = require('./lib/XiaoAiError')
 const MessageQueue = require('./lib/MessageQueue')
+const { SOUND } = require('./const')
 const { isObject } = require('./lib/utils')
 const { ERR_CODE } = XiaoAiError
 
@@ -28,6 +29,10 @@ class XiaoAi {
     })
 
     this.player = player
+  }
+
+  async test() {
+    return this.playUrl(SOUND.TIMER)
   }
 
   /**
