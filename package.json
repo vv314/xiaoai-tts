@@ -1,6 +1,6 @@
 {
   "name": "xiaoai-tts",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "小爱音箱 TTS",
   "main": "src/index.js",
   "scripts": {
