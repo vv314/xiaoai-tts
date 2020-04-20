@@ -127,7 +127,7 @@ const Session = await client.connect()
 
 - Returns: `{Promise<Response>}`
 
-连接测试
+测试连通性
 
 ```javascript
 client.test()
