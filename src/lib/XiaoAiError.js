@@ -46,7 +46,7 @@ class XiaoAiError extends Error {
       // 运行时错误
       this.type = 'runtime'
 
-      message = errCodeMap[code] || ''
+      message = errCodeMap[code] || code.message
     }
 
     errMsg = typeof errMsg == 'object' ? JSON.stringify(errMsg) : errMsg

@@ -1,4 +1,3 @@
-const togglePlayState = require('./togglePlayState')
 const getPlaylistSongs = require('./getPlaylistSongs')
 const playAlbumPlaylist = require('./playAlbumPlaylist')
 const getSongInfo = require('./getSongInfo')
@@ -35,7 +34,7 @@ async function getMyPlaylist(ticket, listId) {
 
   if (!listId) return playlist
 
-  const songList = playlist.find(item => item.id == listId)
+  const songList = playlist.find((item) => item.id == listId)
 
   // 一次展示全部
   const showCount = songList ? songList.songCount : 0
@@ -58,6 +57,5 @@ module.exports = {
   setPlayLoop,
   getSongInfo,
   getMyPlaylist,
-  togglePlayState,
   playAlbumPlaylist
 }

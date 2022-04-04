@@ -2,7 +2,7 @@ const { createHash, randomBytes } = require('crypto')
 const parseBigIntJson = require('./parseBigIntJson')
 
 function getHashFn(algorithm, encoding = 'hex') {
-  return data => {
+  return (data) => {
     const hash = createHash(algorithm)
 
     if (isObject(data)) {
@@ -21,13 +21,19 @@ function appendParam(url = '', param) {
   if (!url) return ''
   if (!param) return url
 
-  url = url.replace(/[?&]$/, '')
-  return /\?/.test(url) ? `${url}&${param}` : `${url}?${param}`
+  const urlObj = new URL(url)
+  const searchParams = new URLSearchParams(param)
+
+  searchParams.forEach((v, k) => {
+    urlObj.searchParams.append(k, v)
+  })
+
+  return urlObj.toString()
 }
 
 function serializeData(data) {
   return Object.keys(data)
-    .map(key => `${key}=${data[key]}`)
+    .map((key) => `${key}=${data[key]}`)
     .join('&')
 }
 
@@ -45,6 +51,12 @@ function randomString(length) {
     .slice(0, length)
 }
 
+function likeDeviceId(str) {
+  const re = /\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/gi
+
+  return re.test(str)
+}
+
 module.exports = {
   md5: getHashFn('md5'),
   sha1Base64: getHashFn('sha1', 'base64'),
@@ -53,5 +65,6 @@ module.exports = {
   appendParam,
   randomString,
   serializeData,
-  parseResponseText
+  parseResponseText,
+  likeDeviceId
 }

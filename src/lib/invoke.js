@@ -16,7 +16,7 @@ async function invoke({ url, data = {}, method = 'GET', cookie }) {
     headers: {
       Cookie: cookie
     }
-  }).catch(e => {
+  }).catch((e) => {
     throw new XiaoAiError(e)
   })
 
@@ -43,9 +43,11 @@ async function ubus(ticket = {}, { method = '', message = {}, path = '' }) {
     requestId: `app_ios_${randomString(30)}`
   }
 
-  const url = appendParam(API.USBS, querystring.stringify(param))
+  console.log('[ubus]', param)
 
-  return invoke({ url, method: 'POST', cookie: ticket.cookie }).catch(e => {
+  const url = appendParam(API.USBS, param)
+
+  return invoke({ url, method: 'POST', cookie: ticket.cookie }).catch((e) => {
     const rep = e.response
     const hasRepError = rep && rep.code == 100 && rep.data && rep.data.msg
 

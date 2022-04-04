@@ -4,8 +4,7 @@ const player = require('./player')
 const getDevice = require('./getDevice')
 const XiaoAiError = require('./lib/XiaoAiError')
 const MessageQueue = require('./lib/MessageQueue')
-const { SOUND } = require('./const')
-const { isObject } = require('./lib/utils')
+const { isObject, likeDeviceId } = require('./lib/utils')
 const { ERR_CODE } = XiaoAiError
 
 class XiaoAi {
@@ -18,21 +17,28 @@ class XiaoAi {
     this.currDevice = null
     this.msgQueue = new MessageQueue()
 
-    this.session = login(user, pwd).then(async session => {
+    this.session = login(user, pwd).then(async (session) => {
+      if (session.deviceId) {
+        this.currDevice = session.deviceId
+
+        return session
+      }
+
       const devices = await getDevice(session.cookie)
+      const liveDevice = devices.filter((d) => d.presence == 'online')
 
-      if (!devices.length) return session
+      if (liveDevice.length == 0) return session
 
-      this.currDevice = devices[0]
+      this.currDevice = liveDevice[0]
 
-      return login.switchSessionDevice(session, this.currDevice)
+      return session.setDevice(this.currDevice)
     })
 
     this.player = player
   }
 
   async test() {
-    return this.playUrl(SOUND.TIMER)
+    return this.say('连接测试')
   }
 
   /**
@@ -40,55 +46,75 @@ class XiaoAi {
    * @return {Promise<Session>} Session 对象
    */
   async connect() {
-    let session = await this.session
+    const { userId, serviceToken, deviceId, serialNumber } = await this.session
 
-    session = Object.assign({}, session)
-    delete session.cookie
-
-    return session
+    return {
+      userId,
+      serviceToken,
+      deviceId,
+      serialNumber
+    }
   }
 
   /**
    * 获取在线设备
-   * @param  {String} name  设备名称（别名）
-   * @param  {String} [deviceId]  设备
-   * @return {Promise<Device[] | Device | null>}  在线设备列表
+   * @param   {deviceName | deviceId} name  设备名称（别名）或设备 ID
+   * @return {Promise<Device[]>}  在线设备列表
    */
   async getDevice(name) {
+    const devices = await this.getAllDevice(name)
+    const isOnline = (d) => d.presence == 'online'
+
+    console.log('devices', devices)
+
+    return devices.filter(isOnline)
+  }
+
+  /**
+   * 获取全部设备
+   * @param  {deviceName | deviceId} name  设备名称（别名）或设备 ID
+   * @return {Promise<Device[]>}  设备列表
+   */
+  async getAllDevice(name) {
     const { cookie } = await this.session
     const devices = await getDevice(cookie)
 
     if (!name) return devices
 
-    const target = devices.find(e => e.name.includes(name))
+    return devices.filter((e) => {
+      if (likeDeviceId(name)) {
+        return e.deviceID == name
+      }
 
-    return target ? target : null
+      return e.name.includes(name)
+    })
   }
 
   /**
    * 使用指定设备
-   * @param  {String} [deviceId]  设备
+   * @param  {String} name  设备名或设备 ID
    */
-  async useDevice(deviceId, isTrusted) {
+  async useDevice(name, isTrusted) {
     let session = await this.session
     let device
 
-    if (isObject(deviceId) && isTrusted) {
-      device = deviceId
+    if (isObject(name) && isTrusted) {
+      device = name
     } else {
-      const devices = await getDevice(session.cookie)
+      const list = await this.getDevice(name)
 
-      device = devices.find(e => e.deviceID == deviceId)
+      device = list[0]
     }
 
     if (!device) {
-      throw new XiaoAiError(ERR_CODE.NO_DEVICE, { deviceId })
+      throw new XiaoAiError(ERR_CODE.NO_DEVICE, { name })
     }
 
-    session = login.switchSessionDevice(session, device)
-
     this.currDevice = device
-    this.session = Promise.resolve(session)
+
+    session.setDevice(this.currDevice)
+
+    return this.currDevice
   }
 
   async _call(method, ...args) {
@@ -181,14 +207,20 @@ class XiaoAi {
    * @return {Promise<Response>} 服务端响应
    */
   async togglePlayState() {
-    return this._call(player.togglePlayState)
+    const status = await this._call(player.getStatus)
+
+    if (status.status == 1) {
+      return this._call(player.pause)
+    }
+
+    return this._call(player.play)
   }
 
   /**
    * 获取设备运行状态
    * @return {Promise<Response>} 服务端响应
    *
-   * Response.status: 2 播放状态
+   * Response.status: 1: 播放，2 暂停，3 空闲
    * Response.volume: number 音量
    * Response.loop_type: number 循环类型，0 单曲循环，1 列表循环，3 列表随机
    * Response.media_type: 4 媒体类型

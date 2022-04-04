@@ -4,6 +4,35 @@ const { SDK_VER, API, APP_DEVICE_ID } = require('./const')
 const XiaoAiError = require('./lib/XiaoAiError')
 const { ERR_CODE } = XiaoAiError
 
+class Session {
+  constructor(opt) {
+    this.userId = opt.userId || ''
+    this.serviceToken = opt.serviceToken || ''
+    this.deviceId = opt.deviceId || ''
+    this.serialNumber = opt.serialNumber || ''
+
+    this.cookie = this.getCookie()
+  }
+
+  getCookie() {
+    let cookie = `userId=${this.userId};serviceToken=${this.serviceToken}`
+
+    if (this.deviceId && this.serialNumber) {
+      cookie += `;deviceId=${this.deviceId};sn=${this.serialNumber}`
+    }
+
+    return cookie
+  }
+
+  setDevice(device) {
+    this.deviceId = device.deviceID
+    this.serialNumber = device.serialNumber
+    this.cookie = this.getCookie()
+
+    return this
+  }
+}
+
 const commonParam = {
   sid: 'micoapi',
   _json: true
@@ -15,21 +44,6 @@ async function login(user, pwd) {
   }
 
   return loginByAccount(user, pwd)
-}
-
-function getCookie({
-  userId = '',
-  serviceToken = '',
-  deviceId = '',
-  serialNumber = ''
-}) {
-  let cookie = `userId=${userId};serviceToken=${serviceToken}`
-
-  if (deviceId && serialNumber) {
-    cookie += `;deviceId=${deviceId};sn=${serialNumber}`
-  }
-
-  return cookie
 }
 
 async function getLoginSign() {
@@ -70,7 +84,7 @@ async function loginMiAi(authInfo) {
       clientSign
     },
     type: 'raw'
-  }).catch(e => {
+  }).catch((e) => {
     throw new XiaoAiError(e)
   })
   const cookieStr = rep.headers.get('set-cookie') || ''
@@ -99,39 +113,25 @@ async function loginByAccount(user, pwd) {
   }
 
   const serviceToken = await loginMiAi(authInfo)
-  const session = {
+  const session = new Session({
     serviceToken: serviceToken,
-    userId: authInfo.userId
-  }
-
-  session['cookie'] = getCookie(session)
+    userId: authInfo.userId,
+    deviceId: '',
+    serialNumber: ''
+  })
 
   return session
 }
 
 async function loginBySession(session) {
   const keys = ['userId', 'serviceToken', 'serialNumber', 'deviceId']
-  const hasVal = k => Boolean(session[k])
+  const hasVal = (k) => Boolean(session[k])
 
   if (!keys.every(hasVal)) {
-    throw new XiaoAiError(ERR_CODE.AURH_ERR)
+    throw new XiaoAiError(ERR_CODE.INVALID_INPUT)
   }
 
-  session['cookie'] = getCookie(session)
-
-  return session
-}
-
-login.switchSessionDevice = (session, device) => {
-  // 确保总是返回一个新对象
-  const newSesstion = Object.assign({}, session, {
-    deviceId: device.deviceID,
-    serialNumber: device.serialNumber
-  })
-
-  newSesstion['cookie'] = getCookie(newSesstion)
-
-  return newSesstion
+  return new Session(session)
 }
 
 module.exports = login

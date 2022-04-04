@@ -1,5 +1,4 @@
 const fetch = require('node-fetch')
-const querystring = require('querystring')
 const { appendParam, parseResponseText } = require('./utils')
 const { MINA_UA, APP_UA } = require('../const')
 
@@ -24,7 +23,7 @@ class HttpError extends Error {
 function request({
   url = '',
   method = 'GET',
-  data,
+  data = '',
   type = 'json',
   headers = {}
 }) {
@@ -46,9 +45,7 @@ function request({
   }
 
   if (method === 'GET') {
-    const urlParam = data ? querystring.stringify(data) : ''
-
-    url = appendParam(url, urlParam)
+    url = appendParam(url, data)
   } else if (method === 'POST') {
     const contentType = options.headers['Content-Type'] || ''
     let body
@@ -56,7 +53,7 @@ function request({
     if (contentType.indexOf('application/json') > -1) {
       body = typeof data === 'string' ? data : JSON.stringify(data)
     } else {
-      body = querystring.stringify(data || {})
+      body = new URLSearchParams(data || {}).toString()
       options.headers['Content-Length'] = body.length
     }
 
@@ -65,7 +62,7 @@ function request({
     }
   }
 
-  return fetch(url, options).then(async rep => {
+  return fetch(url, options).then(async (rep) => {
     if (rep.status == 200) {
       switch (type) {
         case 'raw':
