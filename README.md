@@ -47,6 +47,7 @@ client.say('你好，我是小爱')
 `Session` 可持久化保存，实例化 `XiaoAi` 时可直接传入：
 
 ```javascript
+const XiaoAi = require('xiaoai-tts')
 const fs = require('fs')
 let client = null
 
@@ -83,30 +84,36 @@ client.say('你好，我是小爱')
 
 #### getDevice([name])
 
-- `name` `{String}` 设备名称(别名)
-- Returns: `{Promise<Promise<Object[] | Object | null>}` 设备信息
+- `name` `{String}` 设备名称或设备 ID
+- Returns: `{Promise<Device[]>}` 设备信息
 
-获取**在线**设备列表
+获取**在线**设备
 
 ```javascript
-// 获取所有在线设备
+// 获取在线设备
 const onlineDevices = await client.getDevice()
 
-// 获取单个设备，未找到时返回 null
+// 获取单个设备，未找到时返回 []
 const roomDevice = await client.getDevice('卧室小爱')
 ```
 
-#### useDevice(deviceId)
+#### getAllDevice([name])
 
-- `deviceId` `{String}` 设备 id
+- `name` `{String}` 设备名称或设备 ID
+- Returns: `{Promise<Device[]>}` 设备信息
 
-切换指定设备。`xiaomi-tts` 实例化后默认使用 `getDevice()` 方法返回的第一个设备，可使用此方法切换为指定设备。
+获取所有设备
+
+#### useDevice(name)
+
+- `name` `{String}` 设备名称或设备 ID
+- Returns: `{Promise<Device>}` 设备信息
+
+切换设备。`xiaomi-tts` 实例化后默认使用 `getDevice()` 方法返回的第一个设备，可使用此方法切换为指定设备。
 
 ```javascript
-const roomDevice = await client.getDevice('卧室小爱')
-
 // 使用“卧室小爱”
-client.useDevice(roomDevice.deviceID)
+client.useDevice('卧室小爱')
 
 client.say('你好，我是卧室的小爱')
 ```
@@ -232,10 +239,17 @@ const songList = await client.getMyPlaylist('337361232731772372')
 
 #### playUrl(url)
 
-- `url` `{String}` 音频地址
+- `url` `{String}` MP3 音频地址
 - Returns: `{Promise<Response>}`
 
-播放在线音频
+播放在线音频，**仅支持 MP3 格式**
+
+```javascript
+const XiaoAi = require('xiaoai-tts')
+const client = new XiaoAi(Session)
+
+await client.playUrl(XiaoAi.SOUND.FIRST_VOICE)
+```
 
 ## 参考链接
 
