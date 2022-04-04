@@ -43,7 +43,7 @@ async function ubus(ticket = {}, { method = '', message = {}, path = '' }) {
     requestId: `app_ios_${randomString(30)}`
   }
 
-  console.log('[ubus]', param)
+  // console.log('[ubus]', param)
 
   const url = appendParam(API.USBS, param)
 

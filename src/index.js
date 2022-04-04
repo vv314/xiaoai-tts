@@ -207,13 +207,7 @@ class XiaoAi {
    * @return {Promise<Response>} 服务端响应
    */
   async togglePlayState() {
-    const status = await this._call(player.getStatus)
-
-    if (status.status == 1) {
-      return this._call(player.pause)
-    }
-
-    return this._call(player.play)
+    return this._call(player.togglePlayState)
   }
 
   /**

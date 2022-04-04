@@ -42,6 +42,16 @@ async function getMyPlaylist(ticket, listId) {
   return getPlaylistSongs(ticket, { listId, count: showCount })
 }
 
+async function togglePlayState(ticket) {
+  const status = await getStatus(ticket)
+
+  if (status.status == 1) {
+    return pause(ticket)
+  }
+
+  return play(ticket)
+}
+
 module.exports = {
   getStatus,
   volumeDown,
@@ -57,5 +67,6 @@ module.exports = {
   setPlayLoop,
   getSongInfo,
   getMyPlaylist,
-  playAlbumPlaylist
+  playAlbumPlaylist,
+  togglePlayState
 }
